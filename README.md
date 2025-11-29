@@ -2,6 +2,10 @@
 
 Canonical Pydantic data models for AshMatics healthcare applications.
 
+Latest Revision: v0.2.1
+2025-11-21
+
+
 ## Overview
 
 This library provides the **single source of truth** for data contracts across the AshMatics ecosystem:
