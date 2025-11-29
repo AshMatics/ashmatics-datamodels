@@ -26,7 +26,7 @@ Usage:
     from ashmatics_datamodels.documents import EvidenceDocument, RegulatoryDocument
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __author__ = "Asher Informatics PBC"
 
 from ashmatics_datamodels.common import AshMaticsBaseModel, TimestampedModel
