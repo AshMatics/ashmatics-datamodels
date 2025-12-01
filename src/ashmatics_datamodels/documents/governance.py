@@ -81,7 +81,7 @@ class GovernancePlaceholder(AshMaticsBaseModel):
     context: str = Field(
         default="",
         max_length=200,
-        description="Surrounding context (up to 100 chars on each side)",
+        description="Surrounding context (up to 200 chars total)",
     )
 
 
