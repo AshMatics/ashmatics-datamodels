@@ -18,7 +18,6 @@ Tests for governance document models.
 Reference: ASHKBAPP-47 - Refactor CAI Framework to Common Datamodels
 """
 
-import pytest
 
 from ashmatics_datamodels.documents import (
     ContentFormat,
