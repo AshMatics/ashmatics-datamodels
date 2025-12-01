@@ -27,6 +27,13 @@ This module provides Pydantic models for:
 - kb_product_cards: Product profiles with regulatory status
 - kb_manufacturer_cards: Company profiles and portfolios
 - kb_use_cases: Clinical use cases with applicable products
+- kb_governance_*: Clinical AI Governance Framework artifacts (ASHKBAPP-47)
+  - PolicyDocument: Policy domain documents (overview, template, binding)
+  - SOPDocument: Standard Operating Procedures
+  - WorkProductDocument: Work Product templates and guides
+  - ProcessDocument: Process area base documentation
+  - FrameworkDocument: Framework-level documentation
+  - ControlsDocument: Controls and validation tools
 
 Reference: docs/Plans/DocumentDataModelSchema-Normalize-2025-11-15/
 """
@@ -54,28 +61,47 @@ from ashmatics_datamodels.documents.evidence import (
     EvidenceMetadataContent,
     EvidenceSummary,
 )
+from ashmatics_datamodels.documents.governance import (
+    ControlsDocument,
+    EmbeddingsMeta,
+    FrameworkDocument,
+    GovernanceCitation,
+    GovernanceContent,
+    GovernanceDocument,
+    GovernanceDocumentBase,
+    GovernanceDocumentCreate,
+    GovernanceMetadataContent,
+    GovernancePlaceholder,
+    GovernanceSection,
+    GovernanceSummary,
+    PolicyBinding,
+    PolicyDocument,
+    ProcessDocument,
+    SOPDocument,
+    TraceabilityInfo,
+    WorkProductDocument,
+)
 
-# Regulatory documents
-from ashmatics_datamodels.documents.regulatory import (
-    # Phase 2E enums
-    MetricType,
-    StudyType,
-    # Phase 2E models
-    PerformanceMetric,
-    PerformanceTestResults,
-    PredicateDeviceInfo,
-    RegulatoryContent,
-    RegulatoryDocument,
-    RegulatoryDocumentCreate,
-    RegulatoryMetadataContent,
-    RegulatorySummary,
-    StructuredIndication,
-    TestDataset,
-    TrainingDataCharacteristics,
-    ValidationStudy,
-    # Phase 2D models
-    DatasetCharacteristics,
-    PatientDemographics,
+# Governance documents (ASHKBAPP-47)
+from ashmatics_datamodels.documents.governance_enums import (
+    ContentFormat,
+    DomainType,
+    GovernanceArtifactType,
+    GovernanceCategory,
+    GovernanceContentType,
+    GovernanceSubcategory,
+    ProcessDomainCode,
+)
+
+# Manufacturer cards
+from ashmatics_datamodels.documents.manufacturers import (
+    ClearanceRef,
+    ManufacturerCardContent,
+    ManufacturerCardDocument,
+    ManufacturerCardDocumentCreate,
+    ManufacturerCardMetadataContent,
+    ManufacturerCardSummary,
+    ProductRef,
 )
 
 # AI Model cards
@@ -105,15 +131,27 @@ from ashmatics_datamodels.documents.products import (
     SystemRequirements,
 )
 
-# Manufacturer cards
-from ashmatics_datamodels.documents.manufacturers import (
-    ClearanceRef,
-    ManufacturerCardContent,
-    ManufacturerCardDocument,
-    ManufacturerCardDocumentCreate,
-    ManufacturerCardMetadataContent,
-    ManufacturerCardSummary,
-    ProductRef,
+# Regulatory documents
+from ashmatics_datamodels.documents.regulatory import (
+    # Phase 2D models
+    DatasetCharacteristics,
+    # Phase 2E enums
+    MetricType,
+    PatientDemographics,
+    # Phase 2E models
+    PerformanceMetric,
+    PerformanceTestResults,
+    PredicateDeviceInfo,
+    RegulatoryContent,
+    RegulatoryDocument,
+    RegulatoryDocumentCreate,
+    RegulatoryMetadataContent,
+    RegulatorySummary,
+    StructuredIndication,
+    StudyType,
+    TestDataset,
+    TrainingDataCharacteristics,
+    ValidationStudy,
 )
 
 # Use cases
@@ -203,4 +241,32 @@ __all__ = [
     "UseCaseSummary",
     "ApplicableProductRef",
     "SupportingEvidenceRef",
+    # Governance Enums (ASHKBAPP-47)
+    "ProcessDomainCode",
+    "GovernanceCategory",
+    "GovernanceSubcategory",
+    "DomainType",
+    "ContentFormat",
+    "GovernanceContentType",
+    "GovernanceArtifactType",
+    # Governance Content Components
+    "GovernancePlaceholder",
+    "PolicyBinding",
+    "TraceabilityInfo",
+    "GovernanceCitation",
+    "EmbeddingsMeta",
+    "GovernanceSection",
+    # Governance Documents
+    "GovernanceMetadataContent",
+    "GovernanceContent",
+    "GovernanceDocumentBase",
+    "GovernanceDocument",
+    "GovernanceDocumentCreate",
+    "GovernanceSummary",
+    "PolicyDocument",
+    "SOPDocument",
+    "WorkProductDocument",
+    "ProcessDocument",
+    "FrameworkDocument",
+    "ControlsDocument",
 ]
