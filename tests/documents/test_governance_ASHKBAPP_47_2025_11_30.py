@@ -64,10 +64,14 @@ class TestGovernanceEnums:
         assert ProcessDomainCode.YY == "YY"
 
     def test_governance_categories(self):
-        """Test governance category values."""
+        """Test all governance category values."""
         assert GovernanceCategory.CAI_GOVERNANCE == "cai_governance"
         assert GovernanceCategory.POLICY_DOMAIN == "policy_domain"
         assert GovernanceCategory.PROCESS_DOMAIN == "process_domain"
+        assert GovernanceCategory.VALIDATION_TOOLS == "validation_tools"
+        assert GovernanceCategory.MASTER_REGISTRY == "master_registry"
+        assert GovernanceCategory.FRAMEWORK_DOCUMENTATION == "framework_documentation"
+        assert GovernanceCategory.DOMAIN_DEFINITIONS == "domain_definitions"
 
     def test_domain_types(self):
         """Test domain type values."""
