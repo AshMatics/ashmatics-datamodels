@@ -29,7 +29,8 @@ class ProcessDomainCode(str, Enum):
     Two or three-letter codes for CAI Governance Framework process domains.
 
     These correspond to the 11 process areas defined in the Ashmatics
-    Clinical AI Governance Framework.
+    Clinical AI Governance Framework, plus XX (unknown/unclassified) and
+    YY (policy domain miscellaneous).
     """
 
     PV = "PV"  # Problem & Value Quantification
