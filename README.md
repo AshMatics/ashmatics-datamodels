@@ -1,10 +1,8 @@
 # AshMatics Core DataModels
 
+**Version: 0.3.0**
+
 Canonical Pydantic data models for AshMatics healthcare applications.
-
-Latest Revision: v0.2.1
-2025-11-21
-
 
 ## Overview
 
@@ -18,6 +16,7 @@ This library provides the **single source of truth** for data contracts across t
 
 - **FDA Vocabulary**: OpenFDA-aligned schemas for manufacturers, clearances, classifications, recalls, adverse events
 - **MongoDB Document Schemas**: Three-tier structure for all `kb_*` collections (evidence, regulatory, model cards, products, manufacturers, use cases)
+- **Governance Document Models**: Clinical AI Governance Framework artifacts (policies, SOPs, work products, process documentation)
 - **Use Case Taxonomy**: Clinical AI use case categorization
 - **Rich Validation**: Built-in validators for regulatory identifiers (K numbers, product codes)
 - **Database Agnostic**: Pure Pydantic models, no ORM coupling
