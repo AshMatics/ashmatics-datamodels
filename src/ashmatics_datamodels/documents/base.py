@@ -23,14 +23,13 @@ All kb_* MongoDB collections follow this standardized pattern:
 Reference: docs/Plans/DocumentDataModelSchema-Normalize-2025-11-15/
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import Field
 
 from ashmatics_datamodels.common.base import AshMaticsBaseModel
-
 
 # =============================================================================
 # Document Type Enumerations
@@ -46,6 +45,15 @@ class DocumentType(str, Enum):
     PRODUCT_CARD = "kb_product_card"
     MANUFACTURER_CARD = "kb_manufacturer_card"
     USE_CASE = "kb_use_case"
+
+    # Governance document types (ASHKBAPP-47)
+    GOVERNANCE_DOC = "kb_governance_doc"
+    GOVERNANCE_POLICY = "kb_governance_policy"
+    GOVERNANCE_SOP = "kb_governance_sop"
+    GOVERNANCE_WORK_PRODUCT = "kb_governance_work_product"
+    GOVERNANCE_PROCESS = "kb_governance_process"
+    GOVERNANCE_FRAMEWORK = "kb_governance_framework"
+    GOVERNANCE_CONTROLS = "kb_governance_controls"
 
 
 class ContentType(str, Enum):
@@ -71,6 +79,20 @@ class ContentType(str, Enum):
     COMPANY_PROFILE = "company_profile"
     CLINICAL_USE_CASE = "clinical_use_case"
 
+    # Governance content types (ASHKBAPP-47)
+    GOVERNANCE_POLICY_OVERVIEW = "governance_policy_overview"
+    GOVERNANCE_POLICY_TEMPLATE = "governance_policy_template"
+    GOVERNANCE_POLICY_BINDING = "governance_policy_binding"
+    GOVERNANCE_SOP = "governance_sop"
+    GOVERNANCE_WORK_PRODUCT = "governance_work_product"
+    GOVERNANCE_WORK_PRODUCT_WIZARD = "governance_work_product_wizard"
+    GOVERNANCE_PROCESS_AREA = "governance_process_area"
+    GOVERNANCE_FRAMEWORK_OVERVIEW = "governance_framework_overview"
+    GOVERNANCE_FRAMEWORK_GUIDE = "governance_framework_guide"
+    GOVERNANCE_FRAMEWORK_REGISTRY = "governance_framework_registry"
+    GOVERNANCE_CONTROLS_MAPPING = "governance_controls_mapping"
+    GOVERNANCE_CONTROLS_REGISTRY = "governance_controls_registry"
+
 
 # =============================================================================
 # Tier 1: Metadata Object (Artifact Metadata)
@@ -87,11 +109,11 @@ class MetadataObjectBase(AshMaticsBaseModel):
     """
 
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
         description="When the document was first created",
     )
     updated_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
         description="When the document was last updated",
     )
     created_by: str = Field(
@@ -104,38 +126,38 @@ class MetadataObjectBase(AshMaticsBaseModel):
     )
 
     # Storage information
-    file_size_bytes: Optional[int] = Field(
+    file_size_bytes: int | None = Field(
         None,
         description="Size of the source file in bytes",
     )
-    storage_location: Optional[str] = Field(
+    storage_location: str | None = Field(
         None,
         description="URI to source file (e.g., s3://bucket/path/file.pdf)",
     )
-    source_pdf_url: Optional[str] = Field(
+    source_pdf_url: str | None = Field(
         None,
         description="Azure Blob URL to original PDF file for user download/viewing",
     )
-    markdown_url: Optional[str] = Field(
+    markdown_url: str | None = Field(
         None,
         description="Azure Blob URL to full parsed markdown (from Docling/parser) for source verification",
     )
-    checksum_md5: Optional[str] = Field(
+    checksum_md5: str | None = Field(
         None,
         max_length=32,
         description="MD5 checksum of source file",
     )
-    original_filename: Optional[str] = Field(
+    original_filename: str | None = Field(
         None,
         description="Original filename when uploaded",
     )
 
     # Processing information
-    processing_pipeline: Optional[str] = Field(
+    processing_pipeline: str | None = Field(
         None,
         description="Name and version of processing pipeline (e.g., 'grobid_v0.7.2')",
     )
-    processing_completed_at: Optional[datetime] = Field(
+    processing_completed_at: datetime | None = Field(
         None,
         description="When processing completed",
     )
@@ -179,11 +201,11 @@ class MetadataContentBase(AshMaticsBaseModel):
         default_factory=list,
         description="List of tags for categorization",
     )
-    clinical_domain: Optional[str] = Field(
+    clinical_domain: str | None = Field(
         None,
         description="Primary clinical domain (e.g., 'radiology', 'cardiology')",
     )
-    abstract: Optional[str] = Field(
+    abstract: str | None = Field(
         None,
         description="Brief summary or abstract",
     )
@@ -215,7 +237,7 @@ class SectionBase(AshMaticsBaseModel):
         ge=1,
         description="Display order within parent (1-indexed)",
     )
-    text: Optional[str] = Field(
+    text: str | None = Field(
         None,
         description="Section text content",
     )
@@ -232,11 +254,11 @@ class FigureReference(AshMaticsBaseModel):
         ...,
         description="Unique figure identifier (e.g., 'fig1')",
     )
-    caption: Optional[str] = Field(
+    caption: str | None = Field(
         None,
         description="Figure caption",
     )
-    image_url: Optional[str] = Field(
+    image_url: str | None = Field(
         None,
         description="URI to figure image",
     )
@@ -253,11 +275,11 @@ class TableReference(AshMaticsBaseModel):
         ...,
         description="Unique table identifier (e.g., 'table1')",
     )
-    caption: Optional[str] = Field(
+    caption: str | None = Field(
         None,
         description="Table caption",
     )
-    data: Optional[list[dict[str, Any]]] = Field(
+    data: list[dict[str, Any]] | None = Field(
         None,
         description="Table data as list of row dictionaries",
     )
@@ -282,11 +304,11 @@ class CitationReference(AshMaticsBaseModel):
         ...,
         description="Formatted citation text",
     )
-    doi: Optional[str] = Field(
+    doi: str | None = Field(
         None,
         description="DOI if available",
     )
-    pubmed_id: Optional[str] = Field(
+    pubmed_id: str | None = Field(
         None,
         description="PubMed ID if available",
     )
@@ -331,7 +353,7 @@ class MongoDocumentBase(AshMaticsBaseModel):
     structure for embeddings, search, and API responses.
     """
 
-    id: Optional[str] = Field(
+    id: str | None = Field(
         None,
         alias="_id",
         description="MongoDB document ID",
@@ -382,7 +404,7 @@ class DocumentSummaryBase(AshMaticsBaseModel):
         ...,
         description="Document title",
     )
-    clinical_domain: Optional[str] = Field(
+    clinical_domain: str | None = Field(
         None,
         description="Primary clinical domain",
     )
