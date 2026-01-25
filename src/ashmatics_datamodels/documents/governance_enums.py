@@ -19,6 +19,7 @@ Defines process domain codes, content categories, and other governance-specific
 classifications used across the CAI framework.
 
 Reference: ASHKBAPP-47 - Refactor CAI Framework to Common Datamodels
+Last Updated: 2026-01-25 (ASHKBAPP-66) - Added PROCESS_DOCUMENTATION to GovernanceCategory
 """
 
 from enum import Enum
@@ -58,6 +59,7 @@ class GovernanceCategory(str, Enum):
     CAI_GOVERNANCE = "cai_governance"
     POLICY_DOMAIN = "policy_domain"
     PROCESS_DOMAIN = "process_domain"
+    PROCESS_DOCUMENTATION = "process_documentation"  # ASHKBAPP-66: Core CAI framework category
     VALIDATION_TOOLS = "validation_tools"
     MASTER_REGISTRY = "master_registry"
     FRAMEWORK_DOCUMENTATION = "framework_documentation"

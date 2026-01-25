@@ -1,8 +1,14 @@
 # AshMatics Core DataModels
 
-**Version: 0.3.0**
+**Version: 0.3.1**
 
 Canonical Pydantic data models for AshMatics healthcare applications.
+
+## Changelog
+
+### v0.3.1 (2026-01-25) — ASHKBAPP-66
+- Added `PROCESS_DOCUMENTATION` to `GovernanceCategory` enum
+- This is a core CAI framework category required for MCP service compatibility
 
 ## Overview
 
