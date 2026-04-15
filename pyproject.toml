@@ -62,9 +62,10 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/AsherInformatics/ashmatics-core-datamodels"
-Documentation = "https://github.com/AsherInformatics/ashmatics-core-datamodels#readme"
-Repository = "https://github.com/AsherInformatics/ashmatics-core-datamodels"
+Homepage = "https://github.com/AshMatics/ashmatics-datamodels"
+Documentation = "https://github.com/AshMatics/ashmatics-datamodels#readme"
+Repository = "https://github.com/AshMatics/ashmatics-datamodels"
+"Bug Tracker" = "https://github.com/AshMatics/ashmatics-datamodels/issues"
 
 [build-system]
 requires = ["hatchling"]
