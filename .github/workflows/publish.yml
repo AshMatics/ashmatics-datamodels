@@ -11,8 +11,15 @@ on:
         options: [pypi, testpypi]
         default: testpypi
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   publish:
+    permissions:
+      contents: read
+      id-token: write
     uses: AshMatics/ashmatics-workflows/.github/workflows/publish-pypi.yml@v1
     with:
       python-version: "3.11"
