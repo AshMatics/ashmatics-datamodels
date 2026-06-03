@@ -81,25 +81,24 @@ class GovernanceAutonomy(str, Enum):
 
 class UnitGranularity(str, Enum):
     """
-    Granularity of a clinical/organizational unit — the Axis-2 driving function
+    Granularity of an organizational or clinical unit — the Axis-2 driving function
     for scope_profiles candidate-domain sizing (JAC-26): a narrow unit (section,
-    lab) gets a tight process-domain set; a broad unit (institute, service line)
-    gets a wider one. Granularity is an EXPLICIT tag, never inferred from nesting
-    depth.
+    lab) gets a tight process-domain set; a broad band (system, enterprise) gets a
+    wider one. Granularity is an EXPLICIT tag, never inferred from nesting depth.
 
-    Binds 1:1 to the ``forge:UnitGranularity`` SKOS ConceptScheme; each member
-    value matches a concept ``skos:notation``.
+    Binds 1:1 to the ``forge:UnitGranularity`` SKOS ConceptScheme (FORGE v0.6.0);
+    each member value matches a concept ``skos:notation``. The axis spans org-level
+    bands (system, enterprise, practice) and clinical-unit bands (institute … lab),
+    and subsumes coreapp's former ``BlueprintScopeType`` vocabulary into one scale.
 
-    RECONCILIATION GAP (surfaced for JAC-27, decision pending): coreapp's Django
-    ``UnitGranularity`` additionally carries ``system``, ``enterprise`` and
-    ``practice`` — *org-level* scope rather than clinical-unit granularity, and it
-    overlaps ``BlueprintScopeType`` (enterprise/service_line/department/facility).
-    Those three are deliberately NOT here yet: either FORGE's scheme gains
-    org-level granularities or coreapp narrows to the clinical-unit set. Until that
-    is resolved, coreapp cannot drop-in import this enum without dropping the three
-    extras. See the JAC-27 handoff note.
+    RECONCILED (JAC-27, 2026-06-02): FORGE was extended with the org-level bands
+    (decision: those are real US health-system levels) rather than narrowing
+    coreapp. This enum now matches coreapp's Django ``UnitGranularity`` value-for-
+    value, so coreapp can single-source from here.
     """
 
+    SYSTEM = "system"
+    ENTERPRISE = "enterprise"
     INSTITUTE = "institute"
     SERVICE_LINE = "service_line"
     DEPARTMENT = "department"
@@ -107,3 +106,4 @@ class UnitGranularity(str, Enum):
     SECTION = "section"
     PROGRAM = "program"
     LAB = "lab"
+    PRACTICE = "practice"
