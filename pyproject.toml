@@ -14,7 +14,7 @@
 
 [project]
 name = "ashmatics-datamodels"
-version = "0.3.2"  # First PyPI release
+version = "0.4.0"  # +org module: FORGE-aligned org-instance shape (JAC-27 / ADR-002)
 description = "Canonical Pydantic data models for AshMatics healthcare applications - FDA vocabulary, regulatory schemas, and clinical AI use cases"
 authors = [
     {name = "Asher Informatics PBC", email = "info@asherinformatics.com"}
@@ -53,6 +53,7 @@ dev = [
     "pytest-cov>=4.1.0",
     "ruff>=0.1.0",
     "mypy>=1.7.0",
+    "rdflib>=7.0.0",  # ADR-002 x_ontology binding CI guard (tests/org) only; not a runtime dep
 ]
 docs = [
     "mkdocs>=1.5.0",
