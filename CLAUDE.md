@@ -233,3 +233,13 @@ Follow semantic versioning:
 - Major (X.0.0): Breaking changes to existing schemas
 
 Update both `pyproject.toml` version and `src/ashmatics_datamodels/__init__.py` `__version__`.
+
+---
+
+## Release & versioning
+
+Conventions live in `ashmatics-engineering` ("the Asher Way") — treat as authoritative.
+
+- **Tags:** `<sku>/vMAJOR.MINOR.PATCH` — e.g. `lcr/v1.0.0`. SKU is a path-like prefix.
+- **Branching:** trunk-based. No `release/*` branches in this repo.
+- **Package SemVer** (bumped in `pyproject.toml` + `__init__.py` per the Version Bumping section above) is this library's own version. FORGE platform release alignment is handled separately via the manifest in `ashmatics-infra/release-manifests/`.
