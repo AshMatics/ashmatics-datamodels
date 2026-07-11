@@ -1,10 +1,19 @@
 # AshMatics Core DataModels
 
-**Version: 0.3.1**
+**Version: 0.5.0**
 
 Canonical Pydantic data models for AshMatics healthcare applications.
 
 ## Changelog
+
+### v0.5.0 (2026-07-11) — ASHKBAPP-91
+- `DocumentType` (the `kb_documents` `document_type` discriminator) is now the KIND axis, single-sourced from the ontology `ash:DocumentKindScheme` (ADR-002 Decision 5). Added `GENERAL` (`kb_general`) fallback; `USE_CASE` kept but **deprecated** (ADR-005 — the Mongo use-case path is retired to the Postgres `kb_use_cases` spine).
+- New `RegulatoryRegion` (8) and `RegulatoryPathway` (7) enums, ontology-bound to `ash:RegulatoryRegionScheme` / `ash:RegulatoryPathwayScheme`; added optional `regulatory_region` / `regulatory_pathway` fields to `RegulatoryMetadataContent` (regulator scoping carried as sibling fields — the "split" model).
+- Extended the ADR-002 rdflib binding guard to the document models (`tests/documents/test_ontology_binding.py`): every scheme-bound enum value must be a real concept in its scheme, so vocabulary drift fails tests.
+- Requires `ashmatics-ontology >= 2.1.0` (`DocumentKindScheme`).
+
+### v0.4.0 (2026-06-02) — JAC-27
+- Added the `org` module: FORGE-aligned organization-instance shape, with `x_ontology_scheme` bindings to the `forge:` ontology and the initial ADR-002 rdflib binding guard (`tests/org/test_ontology_binding.py`). Committed but never separately released to PyPI; first shipped in 0.5.0.
 
 ### v0.3.1 (2026-01-25) — ASHKBAPP-66
 - Added `PROCESS_DOCUMENTATION` to `GovernanceCategory` enum
