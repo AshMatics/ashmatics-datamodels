@@ -49,6 +49,8 @@ from ashmatics_datamodels.documents.base import (
     MetadataContentBase,
     MetadataObjectBase,
     MongoDocumentBase,
+    RegulatoryPathway,
+    RegulatoryRegion,
     SectionBase,
     TableReference,
 )
@@ -169,6 +171,8 @@ __all__ = [
     # Enums
     "DocumentType",
     "ContentType",
+    "RegulatoryRegion",
+    "RegulatoryPathway",
     # Base schemas
     "MetadataObjectBase",
     "MetadataContentBase",

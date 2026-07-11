@@ -37,13 +37,27 @@ from ashmatics_datamodels.common.base import AshMaticsBaseModel
 
 
 class DocumentType(str, Enum):
-    """MongoDB collection/document types."""
+    """The kb_documents ``document_type`` discriminator — the KIND axis.
+
+    Single-sourced from the ontology ``ash:DocumentKindScheme`` (ASHKBAPP-91,
+    ADR-002 Decision 5). Each value is the exact stored token and must equal the
+    scheme's ``skos:notation``; the ADR-002 CI guard
+    (tests/documents/test_ontology_binding.py) fails on drift. Regulator scoping
+    is NOT encoded here — it lives on the sibling ``regulatory_region`` /
+    ``regulatory_pathway`` fields. Do not add a value without first adding the
+    concept to the ontology TTL.
+    """
 
     EVIDENCE_DOC = "kb_evidence_doc"
     AIMODEL_CARD = "kb_aimodel_card"
     REGULATORY_DOC = "kb_regulatory_doc"
     PRODUCT_CARD = "kb_product_card"
     MANUFACTURER_CARD = "kb_manufacturer_card"
+
+    # DEPRECATED (ADR-005): the Mongo use-case document path is retired to the
+    # Postgres kb_use_cases spine. Retained transitionally (deprecate-and-defer,
+    # ASHKBAPP-91); the ontology concept ash:dk-use-case carries owl:deprecated.
+    # Remove this member together with that concept in the follow-up.
     USE_CASE = "kb_use_case"
 
     # Governance document types (ASHKBAPP-47)
@@ -54,6 +68,48 @@ class DocumentType(str, Enum):
     GOVERNANCE_PROCESS = "kb_governance_process"
     GOVERNANCE_FRAMEWORK = "kb_governance_framework"
     GOVERNANCE_CONTROLS = "kb_governance_controls"
+
+    # Fallback discriminator for uncategorized kb_documents (ASHKBAPP-91).
+    GENERAL = "kb_general"
+
+
+class RegulatoryRegion(str, Enum):
+    """Regulatory jurisdiction of a regulatory document (the regulator axis).
+
+    Single-sourced from ontology ``ash:RegulatoryRegionScheme`` (ASHKBAPP-91,
+    ADR-002 Decision 5); values are the scheme's ``skos:notation``. Scopes a
+    ``kb_regulatory_doc`` by jurisdiction (US->FDA, UK->MHRA, Canada->Health
+    Canada, Australia->TGA, Japan->PMDA, China->NMPA). The ADR-002 CI guard
+    enforces parity with the scheme.
+    """
+
+    USA = "USA"
+    EU = "EU"
+    UK = "UK"
+    CA = "CA"
+    AU = "AU"
+    JP = "JP"
+    CN = "CN"
+    GLOBAL = "GLOBAL"
+
+
+class RegulatoryPathway(str, Enum):
+    """Regulatory submission / clearance pathway of a regulatory document.
+
+    Single-sourced from ontology ``ash:RegulatoryPathwayScheme`` (ASHKBAPP-91,
+    ADR-002 Decision 5); values are the scheme's ``skos:notation``. Broader than
+    the FDA-API ``fda.enums.ClearanceType`` (adds Exempt and CE Mark for
+    multi-jurisdiction scope); the two overlap and a future pass may relate them
+    via SKOS mappings. The ADR-002 CI guard enforces parity with the scheme.
+    """
+
+    K510 = "510(k)"
+    PMA = "PMA"
+    DE_NOVO = "De Novo"
+    HDE = "HDE"
+    EUA = "EUA"
+    EXEMPT = "Exempt"
+    CE_MARK = "CE"
 
 
 class ContentType(str, Enum):
@@ -182,7 +238,8 @@ class MetadataContentBase(AshMaticsBaseModel):
 
     document_type: DocumentType = Field(
         ...,
-        description="Type of document (maps to MongoDB collection)",
+        description="Type of document (the kb_documents KIND discriminator)",
+        json_schema_extra={"x_ontology_scheme": "ash:DocumentKindScheme"},
     )
     content_type: ContentType = Field(
         ...,

@@ -45,6 +45,8 @@ from ashmatics_datamodels.documents.base import (
     MetadataContentBase,
     MetadataObjectBase,
     MongoDocumentBase,
+    RegulatoryPathway,
+    RegulatoryRegion,
     SectionBase,
 )
 
@@ -747,6 +749,18 @@ class RegulatoryMetadataContent(MetadataContentBase):
     product_code: Optional[str] = Field(
         None,
         description="FDA three-letter product code(s). Single code (e.g., 'QIH') or comma-separated for multiple (e.g., 'QIH,LLZ')",
+    )
+
+    # Regulator scoping (ASHKBAPP-91 split model; ontology-single-sourced)
+    regulatory_region: Optional[RegulatoryRegion] = Field(
+        None,
+        description="Regulatory jurisdiction (US->FDA, UK->MHRA, ...). The regulator axis of the split document_type model.",
+        json_schema_extra={"x_ontology_scheme": "ash:RegulatoryRegionScheme"},
+    )
+    regulatory_pathway: Optional[RegulatoryPathway] = Field(
+        None,
+        description="Regulatory submission/clearance pathway (510(k), PMA, De Novo, CE, ...).",
+        json_schema_extra={"x_ontology_scheme": "ash:RegulatoryPathwayScheme"},
     )
 
     # Predicate devices (for easy querying)
