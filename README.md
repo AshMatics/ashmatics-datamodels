@@ -1,10 +1,15 @@
 # AshMatics Core DataModels
 
-**Version: 0.6.0**
+**Version: 0.7.0**
 
 Canonical Pydantic data models for AshMatics healthcare applications.
 
 ## Changelog
+
+### v0.7.0 (2026-07-12) — ASHKBAPP-99
+- Added the `artifacts` module: the aigov-framework ADR-006 artifact plane, ported field-for-field from that repo's legacy `models_pydantic/pydantic_models.py` (now a deprecation shim over this module). KB base-content side: `ToolRef`, `PracticeView`, `BaseArtifact`, `CompiledView`; coreapp tenant-instantiation side: `DecisionRecord`, `ExportRecord`, `InstanceArtifact`, `InstanceIndex`.
+- `InstanceArtifact` carries the one clean ontology binding (`x_ontology_class: ashcai:WorkProduct`), guard-checked against the TTL. Fuller bindings (e.g. `BaseArtifact.type` vs `ash:DocumentKindScheme`) deferred to the ADR-002 promotion gate — different stored values make that a redesign, not a port.
+- Behavior tightening vs the legacy plain `BaseModel`: extra fields forbidden, assignment validation (house `AshMaticsBaseModel`). A field-parity test pins the port against the legacy shape.
 
 ### v0.6.0 (2026-07-12) — ASHKBAPP-99
 - Added the `methods` module: CHAR governance-method contracts per aigov-framework ADR-011 §5. `MethodDefinition` / `ApplicabilityProfile` / `EvidenceRef` / `DefaultRule` model `method_registry.yaml` field-for-field; `MethodSet` / `ApprovedMethodSet` carry the shared-set and Blueprint-resolved shapes; `MethodRegistry` round-trips the whole registry document without loss (acceptance-tested against the live file).
