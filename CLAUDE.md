@@ -16,47 +16,45 @@ Version: 0.7.0 as of 2026-07-12 — `pyproject.toml` and the README changelog ar
 
 ### Environment Setup
 ```bash
-# Python 3.11+ required
-python -m venv .venv
-source .venv/bin/activate  # or `.venv\Scripts\activate` on Windows
-pip install -e ".[dev]"
+# Python 3.11+ required; uv-managed venv (no pip)
+uv venv .venv
+VIRTUAL_ENV="$(pwd)/.venv" uv pip install -e ".[dev]"
 ```
 
 ### Testing
 ```bash
 # Run all tests
-pytest
+.venv/bin/python -m pytest
 
 # Run with coverage
-pytest --cov=src/ashmatics_datamodels --cov-report=term-missing
+.venv/bin/python -m pytest --cov=src/ashmatics_datamodels --cov-report=term-missing
 
 # Run specific test file
-pytest tests/fda/test_clearances.py
+.venv/bin/python -m pytest tests/fda/test_clearances.py
 
 # Run specific test
-pytest tests/fda/test_clearances.py::TestFDA510kClearance::test_k_number_validation
+.venv/bin/python -m pytest tests/fda/test_clearances.py::TestFDA510kClearance::test_k_number_validation
 ```
 
 ### Linting and Type Checking
 ```bash
 # Lint with ruff
-ruff check src/
+uv run --with ruff ruff check src/
 
 # Format code
-ruff format src/ tests/
+uv run --with ruff ruff format src/ tests/
 
 # Type check with mypy
-mypy src/
+.venv/bin/python -m mypy src/
 ```
 
 ### Building the Package
 ```bash
-# Build wheel
-pip install build
-python -m build
+# Build sdist + wheel
+uv build
 
 # Install locally in editable mode
-pip install -e .
+VIRTUAL_ENV="$(pwd)/.venv" uv pip install -e .
 ```
 
 ### Documentation
