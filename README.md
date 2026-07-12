@@ -19,6 +19,7 @@ Canonical Pydantic data models for AshMatics healthcare applications.
 - ID grammars exported as constants (`METHOD_ID_PATTERN`, `JUNCTION_REF_PATTERN`, ...) so framework validators import one truth.
 - Requires `ashmatics-ontology >= 2.2.0` (`GovernanceMethodScheme`, `ModelClassScheme`).
 - Deliberately NOT included: the aigov-framework's legacy `models_pydantic/pydantic_models.py` reconciliation — a separate PR per the Phase 2 handoff (no new contracts land in that file).
+- Committed but never separately released to PyPI; first shipped in 0.7.0.
 
 ### v0.5.0 (2026-07-11) — ASHKBAPP-91
 - `DocumentType` (the `kb_documents` `document_type` discriminator) is now the KIND axis, single-sourced from the ontology `ash:DocumentKindScheme` (ADR-002 Decision 5). Added `GENERAL` (`kb_general`) fallback; `USE_CASE` kept but **deprecated** (ADR-005 — the Mongo use-case path is retired to the Postgres `kb_use_cases` spine).
