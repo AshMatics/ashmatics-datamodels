@@ -25,9 +25,10 @@ Usage:
     from ashmatics_datamodels.use_cases import UseCaseCategoryBase
     from ashmatics_datamodels.documents import EvidenceDocument, RegulatoryDocument
     from ashmatics_datamodels.org import OrganizationModel, GovernanceAutonomy
+    from ashmatics_datamodels.methods import MethodDefinition, MethodRegistry
 """
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 __author__ = "Asher Informatics PBC"
 
 from ashmatics_datamodels.common import AshMaticsBaseModel, TimestampedModel

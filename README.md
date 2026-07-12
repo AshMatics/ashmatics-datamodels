@@ -1,10 +1,19 @@
 # AshMatics Core DataModels
 
-**Version: 0.5.0**
+**Version: 0.6.0**
 
 Canonical Pydantic data models for AshMatics healthcare applications.
 
 ## Changelog
+
+### v0.6.0 (2026-07-12) — ASHKBAPP-99
+- Added the `methods` module: CHAR governance-method contracts per aigov-framework ADR-011 §5. `MethodDefinition` / `ApplicabilityProfile` / `EvidenceRef` / `DefaultRule` model `method_registry.yaml` field-for-field; `MethodSet` / `ApprovedMethodSet` carry the shared-set and Blueprint-resolved shapes; `MethodRegistry` round-trips the whole registry document without loss (acceptance-tested against the live file).
+- `ApplicabilityProfile` axes are `x_ontology_scheme`-bound enums against the five ash facet schemes plus the new `ash:ModelClassScheme` (ontology ADR-006), each also carrying its `ashcai:methodAppliesTo` subproperty via `x_ontology_property`. Values use concept local names (`ap-predictive`), the canonical CHAR concept IDs.
+- CLF v0.6.0 rule-grammar types shared with coreapp MethodRoute (ADR-031): `ConditionScope`, `EvaluationTime`, `MethodControlAction`, `SystemAttribute`.
+- New ADR-002 rdflib binding guard (`tests/methods/test_ontology_binding.py`): accepts concept local names in addition to notations/prefLabels (the CHAR ID convention), and adds a reverse-completeness check so facet-scheme concepts without enum members also fail CI. This supersedes the static SKOS snapshot in the aigov-framework's `validate_method_registry.py`.
+- ID grammars exported as constants (`METHOD_ID_PATTERN`, `JUNCTION_REF_PATTERN`, ...) so framework validators import one truth.
+- Requires `ashmatics-ontology >= 2.2.0` (`GovernanceMethodScheme`, `ModelClassScheme`).
+- Deliberately NOT included: the aigov-framework's legacy `models_pydantic/pydantic_models.py` reconciliation — a separate PR per the Phase 2 handoff (no new contracts land in that file).
 
 ### v0.5.0 (2026-07-11) — ASHKBAPP-91
 - `DocumentType` (the `kb_documents` `document_type` discriminator) is now the KIND axis, single-sourced from the ontology `ash:DocumentKindScheme` (ADR-002 Decision 5). Added `GENERAL` (`kb_general`) fallback; `USE_CASE` kept but **deprecated** (ADR-005 — the Mongo use-case path is retired to the Postgres `kb_use_cases` spine).
