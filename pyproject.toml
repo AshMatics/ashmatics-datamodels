@@ -14,7 +14,7 @@
 
 [project]
 name = "ashmatics-datamodels"
-version = "0.6.0"  # +methods module: CHAR method contracts + CLF v0.6.0 types (ASHKBAPP-99 / ADR-011)
+version = "0.7.0"  # +artifacts module: ADR-006 artifact-plane contracts, legacy reconciliation (ASHKBAPP-99)
 description = "Canonical Pydantic data models for AshMatics healthcare applications - FDA vocabulary, regulatory schemas, and clinical AI use cases"
 authors = [
     {name = "Asher Informatics PBC", email = "info@asherinformatics.com"}
