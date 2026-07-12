@@ -10,7 +10,7 @@ This is **ashmatics-core-datamodels**, a canonical Pydantic data models library 
 - ashmatics-knowledgebase-tools (ingestion pipelines)
 - AI Watch applications
 
-Version: 0.2.0 (Phase 1 complete, Phase 2 in progress)
+Version: 0.7.0 as of 2026-07-12 — `pyproject.toml` and the README changelog are authoritative, not this line.
 
 ## Development Commands
 
@@ -107,7 +107,21 @@ The library follows a domain-driven structure:
   - `manufacturers.py`: Manufacturer profile cards
   - `use_cases.py`: Clinical use case documents
 
+- **org/** - FORGE-aligned organization-instance shape (JAC-27)
+  - `enums.py`: Org governance-boundary vocabulary (`ParentRelationship`, `GovernanceAutonomy`, `UnitGranularity`)
+  - `organization.py`: `OrganizationModel` — prototype of the ADR-002 `x_ontology_*` binding convention
+
+- **methods/** - CHAR governance-method contracts (aigov-framework ADR-011; ASHKBAPP-99)
+  - `MethodDefinition`, `ApplicabilityProfile`, `MethodSet`, `ApprovedMethodSet`, `MethodRegistry`
+  - CLF rule-grammar types shared with coreapp; ontology-bound enums guarded by rdflib tests
+
+- **artifacts/** - aigov-framework ADR-006 artifact-plane contracts (ASHKBAPP-99)
+  - `base_content.py`: KB base-content side (`ToolRef`, `PracticeView`, `BaseArtifact`, `CompiledView`)
+  - `instances.py`: tenant-instantiation side (`DecisionRecord`, `ExportRecord`, `InstanceArtifact`, `InstanceIndex`)
+
 - **utils/** - Parsing and normalization utilities (future)
+
+Ontology-bound enums across `documents/`, `org/`, and `methods/` carry `x_ontology_scheme` bindings validated by rdflib guard tests against `../ashmatics-ontology` TTLs (ADR-002 in that repo's `docs/decisions/` — this repo has no ADR series of its own).
 
 ### Three-Tier MongoDB Document Pattern
 
@@ -190,17 +204,23 @@ summary = EvidenceSummary.from_document(full_document)
 - Common validators and enums
 - Regulators and frameworks
 
-**Phase 2 (v0.2.0)** 🚧 IN PROGRESS:
+**Phase 2 (v0.2.0)** ✅ COMPLETE:
 - MongoDB document schemas (three-tier structure)
 - Evidence and regulatory documents
 - Model cards, product cards, manufacturer cards
+
+**Beyond the original phase plan** — releases are tracked in the README changelog (authoritative):
+- 0.4.0: `org/` module (JAC-27)
+- 0.5.0: ontology-bound document vocabularies (ASHKBAPP-91)
+- 0.6.0: `methods/` module (ASHKBAPP-99; never separately released)
+- 0.7.0: `artifacts/` module (ASHKBAPP-99)
 
 **Future Phases**:
 - Phase 3: Ontology consolidation (terms, valuesets from ashmatics-tools)
 - Phase 4: Evidence quality metrics
 - Phase 5: Multi-jurisdiction (EMA, PMDA)
 
-See `docs/Plans/ENGR-DesignPlan-CompleteDataModels-2025-11-21.md` for full migration plan.
+See `docs/Plans/ENGR-DesignPlan-CompleteDataModels-2025-11-21.md` for the original migration plan.
 
 ## Important Constraints
 
