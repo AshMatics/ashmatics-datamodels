@@ -24,9 +24,10 @@ Usage::
     from ashmatics_datamodels.registry import (
         RegistryCategory,
         RegistryAIType,
-        RegistrySourcing,
+        SourcingChannel,
         RegistryDeployment,
         is_clinical_use,
+        sourcing_obligation,
     )
 """
 

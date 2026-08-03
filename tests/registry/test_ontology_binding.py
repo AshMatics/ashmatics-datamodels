@@ -157,11 +157,11 @@ def test_bound_enum_members_are_scheme_concepts(graph):
     assert checked, "no bound enum members were checked"
 
 
-def test_pending_bindings_are_still_pending(graph):
+def test_pending_bindings_are_still_pending():
     """Skips loudly while anchors are being authored; when a PENDING binding's
     intended scheme lands in the ontology, flip it to BOUND in bindings.py.
     This test only keeps the gap visible — it cannot verify a scheme that has
-    no CURIE yet."""
+    no CURIE yet (and so needs no ontology graph)."""
     if not PENDING:
         pytest.skip("no PENDING bindings — all vocabularies anchored or product-level")
     names = ", ".join(f"{b.enum.__name__} ({b.note.split('.')[0]})" for b in PENDING)

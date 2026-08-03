@@ -15,23 +15,25 @@
 """
 AI System Registry rule vocabularies (ASHFORGE-412, ADR-036 §2.5).
 
-The four vocabularies the AI System Registry writes and the governance rule
-files will read, plus the two org-level vocabularies derived from them. This
-module is the single source of truth: coreapp's Django ``TextChoices``
-(``core/models/ai_registry.py``) and the frontend's ``aiRegistryTaxonomies.ts``
-are downstream mirrors pinned by parity tests, and scoring-rule YAMLs must test
-only these values.
+The vocabularies the AI System Registry writes and the governance rule files
+will read. Stored per-entry: category, AI type, sourcing channel, deployment
+topology (plus ``DeploymentStatus``, bound ahead of coreapp adoption).
+Derived, never stored: the SRS-REG-15a obligation triad (``RegistrySourcing``)
+and the two org-level rollups (``PortfolioSizeBucket``, ``OrgSourcingMix``) —
+their derivations live in :mod:`.derive`. This module is the single source of
+truth: coreapp's Django ``TextChoices`` (``core/models/ai_registry.py``) and
+the frontend's ``aiRegistryTaxonomies.ts`` are downstream mirrors pinned by
+parity tests, and scoring-rule YAMLs must test only these values.
 
 Every value here is a rule-engine key. Changing one is a vocabulary decision
 that moves data migrations and rule files with it — never a rename
 (SRS-REG-AC-6).
 
 Ontology anchoring is declared in :mod:`.bindings` and enforced by
-``tests/registry/test_ontology_binding.py``. Current state: AI type binds to
-``ash:AIParadigmScheme``. Category's anchor — a top-level clinical /
-operational / administrative scope-zone triad, alongside the promised
-``ash:OperationalPurposeScheme`` — is being authored in the ontology repo and
-is PENDING until it lands.
+``tests/registry/test_ontology_binding.py``. Current state (ontology v2.3.0 /
+ADR-007): category, AI type, sourcing channel, and deployment status are
+BOUND; deployment topology and the derived vocabularies are deliberately
+product-level. No binding is PENDING.
 """
 
 from enum import Enum
