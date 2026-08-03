@@ -10,7 +10,7 @@ This is **ashmatics-core-datamodels**, a canonical Pydantic data models library 
 - ashmatics-knowledgebase-tools (ingestion pipelines)
 - AI Watch applications
 
-Version: 0.7.0 as of 2026-07-12 — `pyproject.toml` and the README changelog are authoritative, not this line.
+Version: 0.8.0 as of 2026-08-03 — `pyproject.toml` and the README changelog are authoritative, not this line.
 
 ## Development Commands
 
@@ -106,7 +106,7 @@ The library follows a domain-driven structure:
   - `use_cases.py`: Clinical use case documents
 
 - **org/** - FORGE-aligned organization-instance shape (JAC-27)
-  - `enums.py`: Org governance-boundary vocabulary (`ParentRelationship`, `GovernanceAutonomy`, `UnitGranularity`)
+  - `enums.py`: Org governance-boundary vocabulary (`ParentRelationship`, `GovernanceAutonomy`, `UnitGranularity`, `ProviderOrgType` — T093 provider classification; NOT coreapp's access-control `OrganizationType`)
   - `organization.py`: `OrganizationModel` — prototype of the ADR-002 `x_ontology_*` binding convention
 
 - **methods/** - CHAR governance-method contracts (aigov-framework ADR-011; ASHKBAPP-99)
@@ -116,6 +116,11 @@ The library follows a domain-driven structure:
 - **artifacts/** - aigov-framework ADR-006 artifact-plane contracts (ASHKBAPP-99)
   - `base_content.py`: KB base-content side (`ToolRef`, `PracticeView`, `BaseArtifact`, `CompiledView`)
   - `instances.py`: tenant-instantiation side (`DecisionRecord`, `ExportRecord`, `InstanceArtifact`, `InstanceIndex`)
+
+- **registry/** - AI System Registry rule vocabularies (coreapp ADR-036 §2.5; ASHFORGE-412)
+  - `enums.py`: the stored registry vocabularies (`RegistryCategory`, `RegistryAIType`, `SourcingChannel`, `RegistryDeployment`), `DeploymentStatus` (per-deployment lifecycle, ontology ADR-007), and derived vocabularies (`RegistrySourcing` obligation triad, `PortfolioSizeBucket`, `OrgSourcingMix`)
+  - `derive.py`: `is_clinical_use` (SRS-REG-03's boolean, derived not stored), `sourcing_obligation` (SRS-REG-15a triad from channel), `portfolio_size_bucket`, `org_sourcing_mix`
+  - `bindings.py`: `SchemeBinding` table (BOUND / PENDING / PRODUCT) — the guard-consumed anchoring declarations; category BOUND to `ash:ScopeZoneScheme`, AI type to `ash:AIParadigmScheme`, deployment status to `ash:DeploymentStatusScheme`, sourcing channel to `ash:SourcingScheme`
 
 - **utils/** - Parsing and normalization utilities (future)
 
@@ -212,6 +217,7 @@ summary = EvidenceSummary.from_document(full_document)
 - 0.5.0: ontology-bound document vocabularies (ASHKBAPP-91)
 - 0.6.0: `methods/` module (ASHKBAPP-99; never separately released)
 - 0.7.0: `artifacts/` module (ASHKBAPP-99)
+- 0.8.0: `registry/` module (ASHFORGE-412)
 
 **Future Phases**:
 - Phase 3: Ontology consolidation (terms, valuesets from ashmatics-tools)

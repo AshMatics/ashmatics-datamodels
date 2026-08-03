@@ -15,7 +15,7 @@
 """
 Organization governance-boundary enumerations (FORGE-aligned).
 
-These three enums are the single source of truth for the organization
+These enums are the single source of truth for the organization
 governance-boundary vocabulary. coreapp's Django ``Organization`` model imports
 them (see JAC-12 / JAC-27 and ADR-002) instead of re-declaring its own copies —
 that re-declaration was the per-repo drift ADR-002 exists to retire.
@@ -77,6 +77,31 @@ class GovernanceAutonomy(str, Enum):
 
     AUTONOMOUS = "autonomous"
     INHERITED = "inherited"
+
+
+class ProviderOrgType(str, Enum):
+    """
+    Kind of healthcare organization — feeds the onboarding "what kind of
+    organization" question and the ``forge:organizationType`` edge.
+
+    Binds to ``ash:SemanticType_T093`` (HealthCareRelatedOrganization), which
+    ontology v2.3.0 / ADR-007 promoted to double as a SKOS ConceptScheme with
+    enumerated ``ash:ot-*`` concepts; member values match ``skos:notation``.
+
+    Until v2.3.0 there were no enumerated concepts, which is why coreapp's
+    ``build_forge_model`` deliberately emits ``organization_type=None`` —
+    mapping coreapp's legacy ``org_type`` values (e.g. the Stage A wizard's
+    ``health_system`` default, which is NOT in this vocabulary) onto these
+    concepts is the coreapp follow-up this enum unblocks.
+    """
+
+    ACADEMIC_MEDICAL_CENTER = "academic_medical_center"
+    COMMUNITY_HOSPITAL = "community_hospital"
+    IDN = "idn"
+    CRITICAL_ACCESS_HOSPITAL = "critical_access_hospital"
+    FQHC = "fqhc"
+    INDEPENDENT_PRACTICE = "independent_practice"
+    FEDERAL = "federal"
 
 
 class UnitGranularity(str, Enum):
