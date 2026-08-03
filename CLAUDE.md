@@ -10,7 +10,7 @@ This is **ashmatics-core-datamodels**, a canonical Pydantic data models library 
 - ashmatics-knowledgebase-tools (ingestion pipelines)
 - AI Watch applications
 
-Version: 0.7.0 as of 2026-07-12 — `pyproject.toml` and the README changelog are authoritative, not this line.
+Version: 0.8.0 as of 2026-08-03 — `pyproject.toml` and the README changelog are authoritative, not this line.
 
 ## Development Commands
 
@@ -117,6 +117,11 @@ The library follows a domain-driven structure:
   - `base_content.py`: KB base-content side (`ToolRef`, `PracticeView`, `BaseArtifact`, `CompiledView`)
   - `instances.py`: tenant-instantiation side (`DecisionRecord`, `ExportRecord`, `InstanceArtifact`, `InstanceIndex`)
 
+- **registry/** - AI System Registry rule vocabularies (coreapp ADR-036 §2.5; ASHFORGE-412)
+  - `enums.py`: the four registry vocabularies (`RegistryCategory`, `RegistryAIType`, `RegistrySourcing`, `RegistryDeployment`) + derived org-level vocabularies (`PortfolioSizeBucket`, `OrgSourcingMix`)
+  - `derive.py`: `is_clinical_use` (SRS-REG-03's boolean, derived not stored), `portfolio_size_bucket`, `org_sourcing_mix`
+  - `bindings.py`: `SchemeBinding` table (BOUND / PENDING / PRODUCT) — the guard-consumed anchoring declarations; category is PENDING the ontology's scope-zone triad
+
 - **utils/** - Parsing and normalization utilities (future)
 
 Ontology-bound enums across `documents/`, `org/`, and `methods/` carry `x_ontology_scheme` bindings validated by rdflib guard tests against `../ashmatics-ontology` TTLs (ADR-002 in that repo's `docs/decisions/` — this repo has no ADR series of its own).
@@ -212,6 +217,7 @@ summary = EvidenceSummary.from_document(full_document)
 - 0.5.0: ontology-bound document vocabularies (ASHKBAPP-91)
 - 0.6.0: `methods/` module (ASHKBAPP-99; never separately released)
 - 0.7.0: `artifacts/` module (ASHKBAPP-99)
+- 0.8.0: `registry/` module (ASHFORGE-412)
 
 **Future Phases**:
 - Phase 3: Ontology consolidation (terms, valuesets from ashmatics-tools)
