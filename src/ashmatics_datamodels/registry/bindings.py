@@ -37,6 +37,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 from .enums import (
+    DeploymentStatus,
     OrgSourcingMix,
     PortfolioSizeBucket,
     RegistryAIType,
@@ -83,21 +84,35 @@ REGISTRY_BINDINGS: tuple[SchemeBinding, ...] = (
     ),
     SchemeBinding(
         enum=RegistryCategory,
-        status=BindingStatus.PENDING,
+        status=BindingStatus.BOUND,
+        scheme="ash:ScopeZoneScheme",
         note=(
-            "Anchor = the top-level clinical/operational/administrative "
-            "scope-zone triad being authored in ashmatics-ontology alongside "
-            "ash:OperationalPurposeScheme (where the three boundary cp-* "
-            "concepts — cp-documentation, cp-care-coordination, "
-            "cp-prior-authorization — migrate). ASHFORGE-412."
+            "Members match ash:sz-* skos:notation (ontology v2.3.0 / ADR-007, "
+            "ASHFORGE-436). The ontology allows multi-zone systems; the "
+            "registry stores one primary zone for now (single → multi is "
+            "additive later; the reverse is lossy)."
+        ),
+    ),
+    SchemeBinding(
+        enum=DeploymentStatus,
+        status=BindingStatus.BOUND,
+        scheme="ash:DeploymentStatusScheme",
+        note=(
+            "Members match ash:ds-* skos:notation (ontology v2.3.0 / ADR-007). "
+            "Per-deployment lifecycle on the forge:deploysApplication edge."
         ),
     ),
     SchemeBinding(
         enum=RegistrySourcing,
         status=BindingStatus.PRODUCT,
         note=(
-            "Encodes where the validation obligation sits (SRS-REG-15a); no "
-            "ontology axis exists for this and none is planned."
+            "Encodes where the validation obligation sits (SRS-REG-15a). "
+            "UNRESOLVED TENSION (ASHFORGE-412): ontology v2.3.0 shipped "
+            "ash:SourcingScheme (commercial / ehr_embedded / homegrown / "
+            "research) — an acquisition-channel axis with different values. "
+            "Decision pending: adopt channel as the stored field and derive "
+            "the obligation triad, or keep the triad stored and record the "
+            "scheme as catalog metadata. Do not bind either way until decided."
         ),
     ),
     SchemeBinding(

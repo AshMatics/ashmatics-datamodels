@@ -49,7 +49,12 @@ from pydantic import ConfigDict, Field
 
 from ashmatics_datamodels.common.base import TimestampedModel
 
-from .enums import GovernanceAutonomy, ParentRelationship, UnitGranularity
+from .enums import (
+    GovernanceAutonomy,
+    OrganizationType,
+    ParentRelationship,
+    UnitGranularity,
+)
 
 
 class OrganizationModel(TimestampedModel):
@@ -79,12 +84,15 @@ class OrganizationModel(TimestampedModel):
     )
     name: str = Field(..., description="Human-readable organization name.")
 
-    organization_type: str | None = Field(
+    organization_type: OrganizationType | None = Field(
         None,
         description="Classifies the org by an ash HealthCareRelatedOrganization "
-        "concept (range ash:SemanticType_T093). Value is an ash concept "
-        "id/IRI, e.g. a SiteOfCare or practice-type concept.",
-        json_schema_extra={"x_ontology_property": "forge:organizationType"},
+        "concept (range ash:SemanticType_T093, enumerated since ontology "
+        "v2.3.0 / ADR-007). Values are ash:ot-* skos:notation tokens.",
+        json_schema_extra={
+            "x_ontology_property": "forge:organizationType",
+            "x_ontology_scheme": "ash:SemanticType_T093",
+        },
     )
     segment: str | None = Field(
         None,

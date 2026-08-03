@@ -62,6 +62,11 @@ class RegistryCategory(str, Enum):
     DERIVED, never stored (ASHFORGE-412 AC-2). The operational /
     administrative boundary is deliberately descriptive-only: a borderline
     call there miscategorizes nothing that rules act on.
+
+    Binds to ``ash:ScopeZoneScheme`` (ontology v2.3.0 / ADR-007, concepts
+    ``ash:sz-*``). The ontology allows a system to span zones (multi-value);
+    the registry stores ONE primary zone for now — the safe direction, since
+    single → multi is an additive migration and multi → single is lossy.
     """
 
     CLINICAL = "clinical"
@@ -118,6 +123,26 @@ class RegistryDeployment(str, Enum):
     ONPREM = "onprem"
     CLOUD = "cloud"
     UNKNOWN = "unknown"
+
+
+class DeploymentStatus(str, Enum):
+    """
+    Lifecycle stage of one deployment — an attribute of the org × application
+    edge (``forge:deploysApplication``), never of the product itself. Binds to
+    ``ash:DeploymentStatusScheme`` (ontology v2.3.0 / ADR-007, ``ash:ds-*``).
+
+    Orthogonal to :class:`RegistryDeployment` (integration topology). Not yet
+    adopted by coreapp's registry model, whose ``RegistryEntryStatus`` stays
+    deliberately minimal (active/retired per ADR-036 §2.1) — note ``retired``
+    appears in both vocabularies; coreapp adoption is a separate decision.
+    """
+
+    EVALUATING = "evaluating"
+    PILOT = "pilot"
+    VALIDATING = "validating"
+    LIVE = "live"
+    PAUSED = "paused"
+    RETIRED = "retired"
 
 
 class PortfolioSizeBucket(str, Enum):

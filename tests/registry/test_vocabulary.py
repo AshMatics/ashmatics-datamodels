@@ -24,6 +24,7 @@ its order is part of the contract (SRS-REG-03).
 import pytest
 
 from ashmatics_datamodels.registry import (
+    DeploymentStatus,
     OrgSourcingMix,
     PortfolioSizeBucket,
     RegistryAIType,
@@ -68,6 +69,17 @@ def test_deployment_values_frozen_in_order():
         "onprem",
         "cloud",
         "unknown",
+    ]
+
+
+def test_deployment_status_values_frozen():
+    assert [m.value for m in DeploymentStatus] == [
+        "evaluating",
+        "pilot",
+        "validating",
+        "live",
+        "paused",
+        "retired",
     ]
 
 

@@ -118,9 +118,9 @@ The library follows a domain-driven structure:
   - `instances.py`: tenant-instantiation side (`DecisionRecord`, `ExportRecord`, `InstanceArtifact`, `InstanceIndex`)
 
 - **registry/** - AI System Registry rule vocabularies (coreapp ADR-036 §2.5; ASHFORGE-412)
-  - `enums.py`: the four registry vocabularies (`RegistryCategory`, `RegistryAIType`, `RegistrySourcing`, `RegistryDeployment`) + derived org-level vocabularies (`PortfolioSizeBucket`, `OrgSourcingMix`)
+  - `enums.py`: the four registry vocabularies (`RegistryCategory`, `RegistryAIType`, `RegistrySourcing`, `RegistryDeployment`), `DeploymentStatus` (per-deployment lifecycle, ontology ADR-007), and derived org-level vocabularies (`PortfolioSizeBucket`, `OrgSourcingMix`)
   - `derive.py`: `is_clinical_use` (SRS-REG-03's boolean, derived not stored), `portfolio_size_bucket`, `org_sourcing_mix`
-  - `bindings.py`: `SchemeBinding` table (BOUND / PENDING / PRODUCT) — the guard-consumed anchoring declarations; category is PENDING the ontology's scope-zone triad
+  - `bindings.py`: `SchemeBinding` table (BOUND / PENDING / PRODUCT) — the guard-consumed anchoring declarations; category BOUND to `ash:ScopeZoneScheme`, AI type to `ash:AIParadigmScheme`, deployment status to `ash:DeploymentStatusScheme`; sourcing carries the unresolved `ash:SourcingScheme` tension (ASHFORGE-412)
 
 - **utils/** - Parsing and normalization utilities (future)
 

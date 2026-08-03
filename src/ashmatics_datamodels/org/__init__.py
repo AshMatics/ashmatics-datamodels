@@ -28,11 +28,17 @@ Usage::
     )
 """
 
-from .enums import GovernanceAutonomy, ParentRelationship, UnitGranularity
+from .enums import (
+    GovernanceAutonomy,
+    OrganizationType,
+    ParentRelationship,
+    UnitGranularity,
+)
 from .organization import OrganizationModel
 
 __all__ = [
     "OrganizationModel",
+    "OrganizationType",
     "ParentRelationship",
     "GovernanceAutonomy",
     "UnitGranularity",

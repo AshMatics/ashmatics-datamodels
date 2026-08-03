@@ -33,6 +33,7 @@ Usage::
 from .bindings import REGISTRY_BINDINGS, BindingStatus, SchemeBinding
 from .derive import is_clinical_use, org_sourcing_mix, portfolio_size_bucket
 from .enums import (
+    DeploymentStatus,
     OrgSourcingMix,
     PortfolioSizeBucket,
     RegistryAIType,
@@ -46,6 +47,7 @@ __all__ = [
     "RegistryAIType",
     "RegistrySourcing",
     "RegistryDeployment",
+    "DeploymentStatus",
     "PortfolioSizeBucket",
     "OrgSourcingMix",
     "is_clinical_use",
