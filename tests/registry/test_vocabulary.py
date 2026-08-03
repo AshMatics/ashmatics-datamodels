@@ -31,9 +31,11 @@ from ashmatics_datamodels.registry import (
     RegistryCategory,
     RegistryDeployment,
     RegistrySourcing,
+    SourcingChannel,
     is_clinical_use,
     org_sourcing_mix,
     portfolio_size_bucket,
+    sourcing_obligation,
 )
 
 # ── Vocabulary freeze ────────────────────────────────────────────────────────
@@ -57,6 +59,12 @@ def test_aitype_values_frozen():
 
 
 def test_sourcing_values_frozen():
+    assert [m.value for m in SourcingChannel] == [
+        "commercial",
+        "ehr_embedded",
+        "homegrown",
+        "research",
+    ]
     assert [m.value for m in RegistrySourcing] == ["vendor", "in_house", "hybrid"]
 
 
@@ -140,6 +148,34 @@ def test_portfolio_size_bucket_boundaries(count, expected):
 def test_portfolio_size_bucket_rejects_negative():
     with pytest.raises(ValueError):
         portfolio_size_bucket(-1)
+
+
+# ── sourcing_obligation (SRS-REG-15a, derived) ───────────────────────────────
+
+
+@pytest.mark.parametrize(
+    ("channel", "adapted", "expected"),
+    [
+        ("commercial", False, RegistrySourcing.VENDOR),
+        ("ehr_embedded", False, RegistrySourcing.VENDOR),
+        ("homegrown", False, RegistrySourcing.IN_HOUSE),
+        ("research", False, RegistrySourcing.IN_HOUSE),
+        # local adaptation is the only path to HYBRID, and only from a
+        # vendor-obligation channel
+        ("commercial", True, RegistrySourcing.HYBRID),
+        ("ehr_embedded", True, RegistrySourcing.HYBRID),
+        ("homegrown", True, RegistrySourcing.IN_HOUSE),
+        ("research", True, RegistrySourcing.IN_HOUSE),
+    ],
+)
+def test_sourcing_obligation(channel, adapted, expected):
+    assert sourcing_obligation(channel, locally_adapted=adapted) is expected
+
+
+def test_sourcing_obligation_uncharacterized_and_invalid():
+    assert sourcing_obligation(None) is None
+    with pytest.raises(ValueError):
+        sourcing_obligation("vendor")  # an obligation value, not a channel
 
 
 # ── org_sourcing_mix (AC-3) ──────────────────────────────────────────────────

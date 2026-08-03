@@ -92,12 +92,36 @@ class RegistryAIType(str, Enum):
     OTHER = "other"
 
 
+class SourcingChannel(str, Enum):
+    """
+    How the system was acquired — the STORED per-entry sourcing field
+    (decision 2026-08-03 on ASHFORGE-412: channel is observable fact, so it
+    is what the customer answers; the obligation reading is derived). Binds
+    to ``ash:SourcingScheme`` (ontology v2.3.0 / ADR-007, ``ash:src-*``).
+
+    - ``COMMERCIAL`` — purchased/licensed product from an AI vendor.
+    - ``EHR_EMBEDDED`` — feature of the EHR platform (e.g. an Epic model).
+    - ``HOMEGROWN`` — built by or for the organization, including
+      commissioned or consultancy-built systems (SRS-REG-15a).
+    - ``RESEARCH`` — research-grade system in translational use.
+    """
+
+    COMMERCIAL = "commercial"
+    EHR_EMBEDDED = "ehr_embedded"
+    HOMEGROWN = "homegrown"
+    RESEARCH = "research"
+
+
 class RegistrySourcing(str, Enum):
     """
-    Where the validation obligation sits — not who wrote the code.
-    Commissioned or consultancy-built systems are ``IN_HOUSE`` (SRS-REG-15a):
-    the customer owns their validation. Per-system; the org-level rollup is
-    :class:`OrgSourcingMix`.
+    Where the validation obligation sits — not who wrote the code. DERIVED
+    from :class:`SourcingChannel` by
+    :func:`ashmatics_datamodels.registry.derive.sourcing_obligation`, never
+    stored (same philosophy as ``clinical_use``): commercial and EHR-embedded
+    systems carry a vendor obligation; homegrown and research systems put it
+    on the customer (SRS-REG-15a). ``HYBRID`` is reached only via the
+    local-adaptation flag — a vendor-channel system the org has tuned or
+    retrained. Per-system; the org-level rollup is :class:`OrgSourcingMix`.
     """
 
     VENDOR = "vendor"

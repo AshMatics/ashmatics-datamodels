@@ -15,7 +15,7 @@
 """
 Organization governance-boundary enumerations (FORGE-aligned).
 
-These three enums are the single source of truth for the organization
+These enums are the single source of truth for the organization
 governance-boundary vocabulary. coreapp's Django ``Organization`` model imports
 them (see JAC-12 / JAC-27 and ADR-002) instead of re-declaring its own copies —
 that re-declaration was the per-repo drift ADR-002 exists to retire.
@@ -79,7 +79,7 @@ class GovernanceAutonomy(str, Enum):
     INHERITED = "inherited"
 
 
-class OrganizationType(str, Enum):
+class ProviderOrgType(str, Enum):
     """
     Kind of healthcare organization — feeds the onboarding "what kind of
     organization" question and the ``forge:organizationType`` edge.

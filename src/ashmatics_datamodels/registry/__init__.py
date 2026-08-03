@@ -31,7 +31,12 @@ Usage::
 """
 
 from .bindings import REGISTRY_BINDINGS, BindingStatus, SchemeBinding
-from .derive import is_clinical_use, org_sourcing_mix, portfolio_size_bucket
+from .derive import (
+    is_clinical_use,
+    org_sourcing_mix,
+    portfolio_size_bucket,
+    sourcing_obligation,
+)
 from .enums import (
     DeploymentStatus,
     OrgSourcingMix,
@@ -40,12 +45,14 @@ from .enums import (
     RegistryCategory,
     RegistryDeployment,
     RegistrySourcing,
+    SourcingChannel,
 )
 
 __all__ = [
     "RegistryCategory",
     "RegistryAIType",
     "RegistrySourcing",
+    "SourcingChannel",
     "RegistryDeployment",
     "DeploymentStatus",
     "PortfolioSizeBucket",
@@ -53,6 +60,7 @@ __all__ = [
     "is_clinical_use",
     "portfolio_size_bucket",
     "org_sourcing_mix",
+    "sourcing_obligation",
     "REGISTRY_BINDINGS",
     "BindingStatus",
     "SchemeBinding",

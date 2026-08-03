@@ -44,6 +44,7 @@ from .enums import (
     RegistryCategory,
     RegistryDeployment,
     RegistrySourcing,
+    SourcingChannel,
 )
 
 
@@ -103,16 +104,23 @@ REGISTRY_BINDINGS: tuple[SchemeBinding, ...] = (
         ),
     ),
     SchemeBinding(
+        enum=SourcingChannel,
+        status=BindingStatus.BOUND,
+        scheme="ash:SourcingScheme",
+        note=(
+            "Members match ash:src-* skos:notation (ontology v2.3.0 / "
+            "ADR-007). The STORED per-entry sourcing field (decision "
+            "2026-08-03, ASHFORGE-412)."
+        ),
+    ),
+    SchemeBinding(
         enum=RegistrySourcing,
         status=BindingStatus.PRODUCT,
         note=(
-            "Encodes where the validation obligation sits (SRS-REG-15a). "
-            "UNRESOLVED TENSION (ASHFORGE-412): ontology v2.3.0 shipped "
-            "ash:SourcingScheme (commercial / ehr_embedded / homegrown / "
-            "research) — an acquisition-channel axis with different values. "
-            "Decision pending: adopt channel as the stored field and derive "
-            "the obligation triad, or keep the triad stored and record the "
-            "scheme as catalog metadata. Do not bind either way until decided."
+            "DERIVED obligation triad (SRS-REG-15a), computed from "
+            "SourcingChannel by derive.sourcing_obligation — resolved "
+            "2026-08-03: channel is stored, obligation is derived. Never a "
+            "stored value; no anchor by design."
         ),
     ),
     SchemeBinding(

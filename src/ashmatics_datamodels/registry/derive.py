@@ -15,13 +15,14 @@
 """
 Derivations over the registry vocabularies (ASHFORGE-412 AC-2 / AC-3).
 
-Three quantities that older specs treated as stored fields are defined here as
+Four quantities that older specs treated as stored fields are defined here as
 pure functions instead, so the registry stays the single written source and
 every consumer computes the same answer:
 
 - ``clinical_use`` (SRS-REG-03's boolean) — derived from the category triad;
+- the obligation triad (SRS-REG-15a) — derived from the sourcing channel;
 - ``ai_portfolio_size`` — derived from the active-entry count;
-- ``ai_sourcing`` (org-level) — derived from per-system sourcing values.
+- ``ai_sourcing`` (org-level) — derived from per-system obligation values.
 
 Invalid vocabulary values raise ``ValueError`` rather than degrade — the same
 fail-loudly posture as the AC-4 guard.
@@ -34,6 +35,7 @@ from .enums import (
     PortfolioSizeBucket,
     RegistryCategory,
     RegistrySourcing,
+    SourcingChannel,
 )
 
 
@@ -64,6 +66,31 @@ def portfolio_size_bucket(active_count: int) -> PortfolioSizeBucket:
     if active_count <= 25:
         return PortfolioSizeBucket.LARGE
     return PortfolioSizeBucket.EXTENSIVE
+
+
+def sourcing_obligation(
+    channel: SourcingChannel | str | None,
+    *,
+    locally_adapted: bool = False,
+) -> RegistrySourcing | None:
+    """SRS-REG-15a's obligation triad, resolved as a derivation (decision
+    2026-08-03): the customer answers the observable question (how was it
+    acquired), and the obligation reading follows.
+
+    Commercial and EHR-embedded systems carry a vendor obligation; homegrown
+    and research systems put it on the customer — including commissioned or
+    consultancy-built systems, which are HOMEGROWN by definition.
+    ``locally_adapted`` marks a vendor-channel system the org has tuned or
+    retrained, which is the only path to ``HYBRID``; on a customer-obligation
+    channel it changes nothing (the obligation is already theirs).
+    ``None`` — an uncharacterized entry — derives ``None``.
+    """
+    if channel is None:
+        return None
+    vendor_side = {SourcingChannel.COMMERCIAL, SourcingChannel.EHR_EMBEDDED}
+    if SourcingChannel(channel) in vendor_side:
+        return RegistrySourcing.HYBRID if locally_adapted else RegistrySourcing.VENDOR
+    return RegistrySourcing.IN_HOUSE
 
 
 def org_sourcing_mix(

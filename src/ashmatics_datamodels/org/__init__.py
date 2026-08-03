@@ -30,15 +30,15 @@ Usage::
 
 from .enums import (
     GovernanceAutonomy,
-    OrganizationType,
     ParentRelationship,
+    ProviderOrgType,
     UnitGranularity,
 )
 from .organization import OrganizationModel
 
 __all__ = [
     "OrganizationModel",
-    "OrganizationType",
+    "ProviderOrgType",
     "ParentRelationship",
     "GovernanceAutonomy",
     "UnitGranularity",

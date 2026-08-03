@@ -51,8 +51,8 @@ from ashmatics_datamodels.common.base import TimestampedModel
 
 from .enums import (
     GovernanceAutonomy,
-    OrganizationType,
     ParentRelationship,
+    ProviderOrgType,
     UnitGranularity,
 )
 
@@ -84,7 +84,7 @@ class OrganizationModel(TimestampedModel):
     )
     name: str = Field(..., description="Human-readable organization name.")
 
-    organization_type: OrganizationType | None = Field(
+    organization_type: ProviderOrgType | None = Field(
         None,
         description="Classifies the org by an ash HealthCareRelatedOrganization "
         "concept (range ash:SemanticType_T093, enumerated since ontology "

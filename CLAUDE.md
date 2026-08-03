@@ -106,7 +106,7 @@ The library follows a domain-driven structure:
   - `use_cases.py`: Clinical use case documents
 
 - **org/** - FORGE-aligned organization-instance shape (JAC-27)
-  - `enums.py`: Org governance-boundary vocabulary (`ParentRelationship`, `GovernanceAutonomy`, `UnitGranularity`)
+  - `enums.py`: Org governance-boundary vocabulary (`ParentRelationship`, `GovernanceAutonomy`, `UnitGranularity`, `ProviderOrgType` — T093 provider classification; NOT coreapp's access-control `OrganizationType`)
   - `organization.py`: `OrganizationModel` — prototype of the ADR-002 `x_ontology_*` binding convention
 
 - **methods/** - CHAR governance-method contracts (aigov-framework ADR-011; ASHKBAPP-99)
@@ -118,9 +118,9 @@ The library follows a domain-driven structure:
   - `instances.py`: tenant-instantiation side (`DecisionRecord`, `ExportRecord`, `InstanceArtifact`, `InstanceIndex`)
 
 - **registry/** - AI System Registry rule vocabularies (coreapp ADR-036 §2.5; ASHFORGE-412)
-  - `enums.py`: the four registry vocabularies (`RegistryCategory`, `RegistryAIType`, `RegistrySourcing`, `RegistryDeployment`), `DeploymentStatus` (per-deployment lifecycle, ontology ADR-007), and derived org-level vocabularies (`PortfolioSizeBucket`, `OrgSourcingMix`)
-  - `derive.py`: `is_clinical_use` (SRS-REG-03's boolean, derived not stored), `portfolio_size_bucket`, `org_sourcing_mix`
-  - `bindings.py`: `SchemeBinding` table (BOUND / PENDING / PRODUCT) — the guard-consumed anchoring declarations; category BOUND to `ash:ScopeZoneScheme`, AI type to `ash:AIParadigmScheme`, deployment status to `ash:DeploymentStatusScheme`; sourcing carries the unresolved `ash:SourcingScheme` tension (ASHFORGE-412)
+  - `enums.py`: the stored registry vocabularies (`RegistryCategory`, `RegistryAIType`, `SourcingChannel`, `RegistryDeployment`), `DeploymentStatus` (per-deployment lifecycle, ontology ADR-007), and derived vocabularies (`RegistrySourcing` obligation triad, `PortfolioSizeBucket`, `OrgSourcingMix`)
+  - `derive.py`: `is_clinical_use` (SRS-REG-03's boolean, derived not stored), `sourcing_obligation` (SRS-REG-15a triad from channel), `portfolio_size_bucket`, `org_sourcing_mix`
+  - `bindings.py`: `SchemeBinding` table (BOUND / PENDING / PRODUCT) — the guard-consumed anchoring declarations; category BOUND to `ash:ScopeZoneScheme`, AI type to `ash:AIParadigmScheme`, deployment status to `ash:DeploymentStatusScheme`, sourcing channel to `ash:SourcingScheme`
 
 - **utils/** - Parsing and normalization utilities (future)
 
