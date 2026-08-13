@@ -137,6 +137,17 @@ class RegistryDeployment(str, Enum):
     meaningful (SRS-REG-03) and consumers must preserve it — never sort for
     display.
 
+    ``EHR``, ``ENTERPRISE_SYSTEM``, and ``AGENTIC_PLATFORM`` were added for
+    ASHFORGE-530/-534's admin/operational catalog broadening: a system
+    embedded in the EHR or a broader enterprise application (RCM, ERP, ITSM)
+    is a different topology from a device or a PACS worklist, and an
+    agent-orchestration platform (Microsoft Copilot Studio and similar) is
+    increasingly how administrative and operational AI is actually run.
+    ``ENTERPRISE_SYSTEM`` is deliberately one bucket rather than a picker over
+    named system types (RCM, ERP, ...) — that finer split, if ever needed, is
+    a second-level configuration question, not a first-level deployment
+    bucket.
+
     ``UNKNOWN`` is an answer the customer chose ("not sure yet"). It is never
     a default, and a NULL/unset deployment is never coerced to it
     (SRS-REG-09): the two states mean different things and nothing may
@@ -145,7 +156,10 @@ class RegistryDeployment(str, Enum):
 
     EMBEDDED = "embedded"
     PACS = "pacs"
+    EHR = "ehr"
+    ENTERPRISE_SYSTEM = "enterprise_system"
     PLATFORM = "platform"
+    AGENTIC_PLATFORM = "agentic_platform"
     ONPREM = "onprem"
     CLOUD = "cloud"
     UNKNOWN = "unknown"

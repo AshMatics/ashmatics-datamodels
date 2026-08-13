@@ -70,10 +70,14 @@ def test_sourcing_values_frozen():
 
 def test_deployment_values_frozen_in_order():
     # Order is meaningful: device → cloud, with the chosen-unknown sentinel last.
+    # ehr/enterprise_system/agentic_platform added ASHFORGE-530/-534.
     assert [m.value for m in RegistryDeployment] == [
         "embedded",
         "pacs",
+        "ehr",
+        "enterprise_system",
         "platform",
+        "agentic_platform",
         "onprem",
         "cloud",
         "unknown",

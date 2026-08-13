@@ -1,10 +1,13 @@
 # AshMatics Core DataModels
 
-**Version: 0.7.0**
+**Version: 0.8.1**
 
 Canonical Pydantic data models for AshMatics healthcare applications.
 
 ## Changelog
+
+### v0.8.1 (2026-08-13) — ASHFORGE-536
+- `RegistryDeployment` gains three values for admin/operational systems: `ehr`, `enterprise_system`, `agentic_platform` — inserted before `platform` in the device→cloud order (SRS-REG-03). Same PRODUCT binding tier as the rest of the enum (deliberately unbound to ash:).
 
 ### v0.8.0 (2026-08-03) — ASHFORGE-412
 - Added the `registry` module: the AI System Registry rule vocabularies (ADR-036 §2.5) — `RegistryCategory`, `RegistryAIType`, `RegistrySourcing`, `RegistryDeployment` — the canonical home that coreapp's Django `TextChoices` and the frontend's `aiRegistryTaxonomies.ts` pin to by parity test. Every value is a rule-engine key; changing one is a vocabulary decision, not a rename (SRS-REG-AC-6).

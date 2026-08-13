@@ -14,7 +14,7 @@
 
 [project]
 name = "ashmatics-datamodels"
-version = "0.8.0"  # +registry module: ADR-036 §2.5 AI-registry rule vocabularies (ASHFORGE-412)
+version = "0.8.1"  # +RegistryDeployment: ehr/enterprise_system/agentic_platform (ASHFORGE-536)
 description = "Canonical Pydantic data models for AshMatics healthcare applications - FDA vocabulary, regulatory schemas, and clinical AI use cases"
 authors = [
     {name = "Asher Informatics PBC", email = "info@asherinformatics.com"}
