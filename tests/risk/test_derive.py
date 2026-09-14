@@ -209,6 +209,11 @@ class TestRecordAndSystem:
         assert system_harm_level([HazardRecord.model_validate(h07)]) is HarmLevel.CRITICAL
 
 
-def test_risk_tier_values_mirror_risk_category():
-    """The CLF note says system.riskTier mirrors RiskCategory; hold it."""
-    assert {t.value for t in RiskTier} == {c.value for c in RiskCategory}
+def test_risk_tier_is_not_the_device_class_risk():
+    """RiskCategory is the FDA device-class risk; RiskTier is derived from
+    hazard records. Same spellings, different concepts (ADR-020 D8). Merging
+    them, or aliasing one to the other, is the conflation ontology 0.18.1
+    removed."""
+    assert RiskTier is not RiskCategory
+    assert not issubclass(RiskTier, RiskCategory) and not issubclass(RiskCategory, RiskTier)
+    assert RiskTier.__module__ == "ashmatics_datamodels.risk.enums"

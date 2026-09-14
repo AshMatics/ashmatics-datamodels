@@ -117,6 +117,21 @@ def test_bound_schemes_resolve_and_match_both_ways(graph):
         )
 
 
+def test_risk_tier_scheme_is_not_described_as_a_device_class(graph):
+    """Ontology <= 2.11.0 defined the tiers as FDA Device Class I/II/III. The
+    guard reads whatever ontology is checked out, so it fails against that
+    version by design: the fix is ashmatics-ontology 0.18.1."""
+    scheme = _expand("ash:RiskTierScheme")
+    subjects = {scheme} | _concepts(graph, scheme)
+    assert len(subjects) == 4, "expected the scheme and three tiers"
+    for s in subjects:
+        for pred in (SKOS.definition, SKOS.scopeNote):
+            for text in graph.objects(s, pred):
+                lowered = str(text).lower()
+                assert "equivalent to fda device class" not in lowered, (s, str(text))
+                assert "riskcategory" not in lowered, (s, str(text))
+
+
 def test_event_link_failure_mode_scheme(graph):
     extra = EventLink.model_fields["failure_mode"].json_schema_extra
     scheme = _expand(extra["x_ontology_scheme"])

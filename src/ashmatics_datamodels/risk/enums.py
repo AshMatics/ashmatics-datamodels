@@ -183,11 +183,15 @@ class RiskTier(str, Enum):
 
     Since ADR-031 D9 it DEFAULTS to a derivation from the system's hazard
     records (:func:`ashmatics_datamodels.risk.derive.system_risk_tier`) and a
-    site may override it with a recorded reason. Values equal
-    :class:`ashmatics_datamodels.common.enums.RiskCategory`, which the CLF note
-    says it mirrors; a test holds them equal. It is a separate enum because
-    ``RiskCategory`` is documented as FDA device class, and this tier is
-    derived from harm and probability, never from a device class (ADR-020 D8).
+    site may override it with a recorded reason.
+
+    NOT :class:`ashmatics_datamodels.common.enums.RiskCategory`. That enum is
+    the FDA device-class risk (``fda.classifications``) and its values happen
+    to be spelled the same. This tier is derived from harm and probability and
+    is never a device class (ADR-020 D8): a prior-authorization agent can be
+    high and a cleared Class II device in a low-harm deployment can be low. The
+    ontology said otherwise until 0.18.1 / 2.11.1; a test keeps the two enums
+    apart so nobody "reconciles" them.
     """
 
     LOW = "low"
