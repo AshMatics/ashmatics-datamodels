@@ -32,6 +32,7 @@ import pytest
 
 from ashmatics_datamodels.common.enums import SignalAccess
 from ashmatics_datamodels.methods import SystemAttribute
+from ashmatics_datamodels.registry import RegistrySourcing
 from ashmatics_datamodels.risk import HarmLevel, RiskTier
 
 
@@ -76,6 +77,13 @@ def test_signal_access_matches_the_enum(registered):
 
 def test_risk_tier_matches_the_enum(registered):
     assert set(registered["system.riskTier"]["allowed_values"]) == {m.value for m in RiskTier}
+
+
+def test_sourcing_matches_the_derived_triad(registered):
+    """system.sourcing is registry.derive.sourcing_obligation's output."""
+    spec = registered["system.sourcing"]
+    assert set(spec["allowed_values"]) == {m.value for m in RegistrySourcing}
+    assert "skos_scheme" not in spec  # derived product vocabulary, no scheme
 
 
 def test_superseded_by_requires_deprecated():
