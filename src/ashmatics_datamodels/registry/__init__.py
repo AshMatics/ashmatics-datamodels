@@ -51,6 +51,12 @@ from .enums import (
     SourcingChannel,
     SystemClass,
 )
+from .provenance import (
+    AttributeValueSource,
+    RegisteredAttributeValue,
+    current_value,
+    differs_from_triage,
+)
 
 __all__ = [
     "RegistryCategory",
@@ -67,6 +73,10 @@ __all__ = [
     "org_sourcing_mix",
     "sourcing_obligation",
     "system_class",
+    "AttributeValueSource",
+    "RegisteredAttributeValue",
+    "current_value",
+    "differs_from_triage",
     "REGISTRY_BINDINGS",
     "BindingStatus",
     "SchemeBinding",

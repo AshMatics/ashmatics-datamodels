@@ -56,9 +56,17 @@ class SystemAttribute(AshMaticsBaseModel):
     )
     source: Literal["ai_inventory", "risk_register"] | None = Field(
         None,
-        description="Operational store the value resolves from. Optional "
-        "when skos_scheme alone defines the value space (classification "
-        "attributes resolve from the inventory's ontology tagging).",
+        description="Operational store the value resolves from once the system "
+        "is registered. Optional when skos_scheme alone defines the value space "
+        "(classification attributes resolve from the inventory's ontology tagging).",
+    )
+    pre_registration_source: Literal["triage_record"] | None = Field(
+        None,
+        description="Where the value resolves from BEFORE the system is registered "
+        "(aigov-framework ADR-033 D4). Intake screens these attributes on the Triage "
+        "Record; conditions for a request resolve from it until a fast-track approval "
+        "or a decision to proceed registers the system and copies the values, with "
+        "provenance, into the register. None for attributes intake does not screen.",
     )
     skos_scheme: str | None = Field(
         None, pattern=CURIE_PATTERN,

@@ -86,6 +86,31 @@ def test_sourcing_matches_the_derived_triad(registered):
     assert "skos_scheme" not in spec  # derived product vocabulary, no scheme
 
 
+SCREENED_AT_INTAKE = {
+    "system.affectsPersons",
+    "system.actionAuthority",
+    "system.class",
+    "system.sourcing",
+    "system.aiParadigm",
+}
+
+
+def test_intake_screened_attributes_resolve_from_the_triage_record(registered):
+    """ADR-033 D4: before registration these resolve from the Triage Record, and only these."""
+    declared = {
+        name for name, spec in registered.items()
+        if spec.get("pre_registration_source") == "triage_record"
+    }
+    assert declared == SCREENED_AT_INTAKE
+
+
+def test_pre_registration_source_is_the_triage_record_only():
+    with pytest.raises(ValueError):
+        SystemAttribute.model_validate(
+            {"name": "system.harmLevel", "type": "integer", "pre_registration_source": "risk_register"}
+        )
+
+
 def test_superseded_by_requires_deprecated():
     with pytest.raises(ValueError, match="not marked deprecated"):
         SystemAttribute.model_validate(

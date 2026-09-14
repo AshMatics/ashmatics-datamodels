@@ -14,7 +14,7 @@
 
 [project]
 name = "ashmatics-datamodels"
-version = "0.16.0"  # risk: HazardRecord, the hazard chain vocabularies, riskTier derived with override; SignalAccess
+version = "0.17.0"  # CLF pre_registration_source (triage_record); registry attribute value provenance
 description = "Canonical Pydantic data models for AshMatics healthcare applications - FDA vocabulary, regulatory schemas, and clinical AI use cases"
 authors = [
     {name = "Asher Informatics PBC", email = "info@asherinformatics.com"}
