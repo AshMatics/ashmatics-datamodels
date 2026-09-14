@@ -42,14 +42,19 @@ from ashmatics_datamodels.common.base import AshMaticsBaseModel
 
 
 class ToolRef(AshMaticsBaseModel):
-      """A tool reference attached to a base practice view. updated 2026-09-6
+    """A tool reference attached to a base practice view.
 
-      `token` is a {{tool.<name>}} identifier resolving against the
-      aigov-framework tooling_registry.yaml. It names the work a step needs
-      done, never who performs it — binding is a runtime fact (CHAR ADR-017 §8).
-      The retired tool:// form implied a resolvable endpoint.
-      """
+    ``token`` is a ``{{tool.<name>}}`` identifier resolving against the
+    aigov-framework tooling_registry.yaml. It names the work a step needs
+    done, never who performs it — binding is a runtime fact (CHAR ADR-017 §8).
+    The retired tool:// form implied a resolvable endpoint.
+    """
 
+    token: str
+    label: str | None = None
+    launch: bool = False
+    launch_target: Literal["UI", "API", "JOB"] = "UI"
+    launch_params: dict[str, Any] = Field(default_factory=dict)
 
 
 class PracticeView(AshMaticsBaseModel):
