@@ -30,9 +30,10 @@ Usage:
     from ashmatics_datamodels.registry import RegistryCategory, RegistryAIType
     from ashmatics_datamodels.controls import MechanismAvailabilityRecord, AssuranceMode
     from ashmatics_datamodels.failure_modes import AIFailureMode, FailureModeTaxonomy
+    from ashmatics_datamodels.risk import HazardRecord, system_risk_tier
 """
 
-__version__ = "0.12.0"
+__version__ = "0.16.0"
 __author__ = "Asher Informatics PBC"
 
 from ashmatics_datamodels.common import AshMaticsBaseModel, TimestampedModel

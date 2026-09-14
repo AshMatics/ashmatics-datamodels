@@ -10,7 +10,7 @@ This is **ashmatics-core-datamodels**, a canonical Pydantic data models library 
 - ashmatics-knowledgebase-tools (ingestion pipelines)
 - AI Watch applications
 
-Version: 0.12.0 as of 2026-09-07 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
+Version: 0.16.0 as of 2026-09-14 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
 
 ## Development Commands
 
@@ -125,6 +125,13 @@ The library follows a domain-driven structure:
   - `enums.py`: the stored registry vocabularies (`RegistryCategory`, `RegistryAIType`, `SourcingChannel`, `RegistryDeployment`), `DeploymentStatus` (per-deployment lifecycle, ontology ADR-007), and derived vocabularies (`RegistrySourcing` obligation triad, `PortfolioSizeBucket`, `OrgSourcingMix`)
   - `derive.py`: `is_clinical_use` (SRS-REG-03's boolean, derived not stored), `sourcing_obligation` (SRS-REG-15a triad from channel), `portfolio_size_bucket`, `org_sourcing_mix`
   - `bindings.py`: `SchemeBinding` table (BOUND / PENDING / PRODUCT) — the guard-consumed anchoring declarations; category BOUND to `ash:ScopeZoneScheme`, AI type to `ash:AIParadigmScheme`, deployment status to `ash:DeploymentStatusScheme`, sourcing channel to `ash:SourcingScheme`
+
+- **risk/** - The CHAR hazard chain (aigov-framework ADR-020, ADR-031; 0.16.0)
+  - `enums.py`: `HarmLevel` (IntEnum 1–5), `HarmDimension`, `AnalysisDepth`, `P1Band` (5) / `P2Band` (4) with ordinal tables, `Acceptability`, `ControlTier`, `ProbabilityReduced`, `RiskTier` (`ash:RiskTierScheme`)
+  - `record.py`: `HazardRecord` — one record per hazardous situation, ported from the framework's `WP-RM-01-Hazard-Analysis-Report.md` field contract (the markdown stays the authored end); harm level and earned depth are properties, never stored
+  - `derive.py`: `analysis_depth`, `system_harm_level`, `system_risk_tier` — **tier per record from `DEFAULT_RISK_TIER_TABLE`, then the max**, with `RiskTierOverride` kept beside the derivation (decided 2026-09-14). A change to the table is a CHAR content decision
+  - `bindings.py`: `RISK_BINDINGS`; `SignalAccess` itself lives in `common/enums.py` as a system facet (notations, not local names)
+  - Lives outside `artifacts/` on purpose: `artifacts` would import it and it needs `registry.enums`, and a hazard record is a record inside a work product, not the artifact plane
 
 - **utils/** - Parsing and normalization utilities (future)
 

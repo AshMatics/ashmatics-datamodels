@@ -140,3 +140,42 @@ class ActionAuthority(str, Enum):
     ACT_WITH_APPROVAL = "aa-act-with-approval"
     ACT_AUTONOMOUSLY = "aa-act-autonomously"
 
+
+class SignalAccess(str, Enum):
+    """
+    ``ash:SignalAccessScheme`` — how a monitoring observable for a deployed AI
+    system reaches governance. Minted in ontology 0.18.0 / 2.11.0 for
+    aigov-framework ADR-031 D5.
+
+    A SYSTEM facet, so it lives here beside :class:`ActionAuthority`. Read two
+    ways: ``{{system.signalAccess}}`` is the set a deployment AFFORDS (an
+    array), and each watched item in the CHAR Risk Surveillance Plan chooses
+    one mode within that set, the highest harm taking the strongest.
+    :data:`SIGNAL_ACCESS_ORDINAL` makes the strength order explicit so nothing
+    depends on member order.
+
+    Values are ``skos:notation`` (``connected``), NOT concept local names
+    (``sig-connected``), unlike :class:`ActionAuthority`. The only consumers are
+    the CLF attribute and the surveillance plan, and both carry notations; the
+    local-name convention belongs to the method and failure-mode applicability
+    axes, which this is not.
+
+    Never call it "modality" (``inputModality`` is the data type consumed) or
+    "mode" (``deploymentMode``, ``generationMode``) — both words are spent.
+    """
+
+    CONNECTED = "connected"
+    QUERIED = "queried"
+    SUBMITTED = "submitted"
+    OBSERVED = "observed"
+
+
+# Strength for surveillance, 4 strongest. A strength ordering, not a quality
+# judgement of the organization (the scheme's own scopeNote).
+SIGNAL_ACCESS_ORDINAL: dict[SignalAccess, int] = {
+    SignalAccess.CONNECTED: 4,
+    SignalAccess.QUERIED: 3,
+    SignalAccess.SUBMITTED: 2,
+    SignalAccess.OBSERVED: 1,
+}
+

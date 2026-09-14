@@ -28,6 +28,7 @@ from ashmatics_datamodels.common.enums import (
     Region,
     RegulatoryStatus,
     RiskCategory,
+    SignalAccess,
 )
 from ashmatics_datamodels.common.frameworks import (
     RegulatoryFrameworkBase,
@@ -60,6 +61,7 @@ __all__ = [
     "RegulatoryStatus",
     "ActionAuthority",
     "RiskCategory",
+    "SignalAccess",
     "ParsingStatus",
     "Region",
     # Validators

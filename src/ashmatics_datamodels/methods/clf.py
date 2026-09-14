@@ -28,7 +28,7 @@ shape for system-scope attributes.
 
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from ashmatics_datamodels.common.base import AshMaticsBaseModel
 
@@ -50,8 +50,9 @@ class SystemAttribute(AshMaticsBaseModel):
         ..., pattern=r"^system\.[a-z][A-Za-z0-9]*$",
         description="Token name as used in conditions, e.g. system.riskTier.",
     )
-    type: Literal["string", "number", "boolean", "array", "object"] = Field(
-        ..., description="CLF value type of the resolved attribute."
+    type: Literal["string", "number", "integer", "boolean", "array", "object"] = Field(
+        ..., description="CLF value type of the resolved attribute. "
+        "system.harmLevel is the first integer attribute (ADR-031 D9)."
     )
     source: Literal["ai_inventory", "risk_register"] | None = Field(
         None,
@@ -64,6 +65,23 @@ class SystemAttribute(AshMaticsBaseModel):
         description="SKOS ConceptScheme CURIE constraining legal values "
         "(e.g. ash:AIParadigmScheme); None for plain-typed attributes.",
     )
+    allowed_values: list[str | int] | None = Field(
+        None,
+        description="Closed value set carried inline so validators need no "
+        "ontology runtime; kept in step with skos_scheme where both are set. "
+        "For an array attribute, the legal members.",
+    )
+    deprecated: bool = False
+    superseded_by: str | None = Field(
+        None, pattern=r"^system\.[a-z][A-Za-z0-9]*$",
+        description="The attribute that replaces a deprecated one.",
+    )
     note: str | None = Field(
         None, description="Registry annotation, e.g. what the attribute drives."
     )
+
+    @model_validator(mode="after")
+    def _superseded_only_when_deprecated(self) -> "SystemAttribute":
+        if self.superseded_by and not self.deprecated:
+            raise ValueError("superseded_by is set on an attribute not marked deprecated")
+        return self
