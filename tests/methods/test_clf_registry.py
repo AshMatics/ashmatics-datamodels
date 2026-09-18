@@ -91,3 +91,63 @@ def test_superseded_by_requires_deprecated():
         SystemAttribute.model_validate(
             {"name": "system.patientFacing", "type": "boolean", "superseded_by": "system.affectsPersons"}
         )
+
+
+def test_pre_registration_source_requires_a_source():
+    """
+    An attribute intake can screen on must also resolve after registration.
+    pre_registration_source says where the value comes from in the gap, not
+    instead of the operational store (ADR-033 D4).
+    """
+    with pytest.raises(ValueError, match="resolves nowhere"):
+        SystemAttribute.model_validate(
+            {
+                "name": "system.affectsPersons",
+                "type": "boolean",
+                "pre_registration_source": "triage_record",
+            }
+        )
+
+
+def test_pre_registration_source_accepted_alongside_a_source():
+    spec = SystemAttribute.model_validate(
+        {
+            "name": "system.affectsPersons",
+            "type": "boolean",
+            "source": "ai_inventory",
+            "pre_registration_source": "triage_record",
+        }
+    )
+    assert spec.pre_registration_source == "triage_record"
+
+
+def test_a_scheme_typed_attribute_may_screen_at_intake():
+    """
+    system.aiParadigm names no store: skos_scheme alone defines its value
+    space, and it resolves from the inventory's ontology tagging. It is
+    still screenable at intake, so the constraint reads skos_scheme as a
+    resolution path too.
+    """
+    spec = SystemAttribute.model_validate(
+        {
+            "name": "system.aiParadigm",
+            "type": "string",
+            "skos_scheme": "ash:AIParadigmScheme",
+            "pre_registration_source": "triage_record",
+        }
+    )
+    assert spec.source is None
+    assert spec.pre_registration_source == "triage_record"
+
+
+def test_triage_record_is_the_only_pre_registration_source():
+    """The Triage Record is the one thing that exists before registration."""
+    with pytest.raises(ValueError):
+        SystemAttribute.model_validate(
+            {
+                "name": "system.riskTier",
+                "type": "string",
+                "source": "risk_register",
+                "pre_registration_source": "ai_inventory",
+            }
+        )

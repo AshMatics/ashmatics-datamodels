@@ -56,9 +56,20 @@ class SystemAttribute(AshMaticsBaseModel):
     )
     source: Literal["ai_inventory", "risk_register"] | None = Field(
         None,
-        description="Operational store the value resolves from. Optional "
-        "when skos_scheme alone defines the value space (classification "
-        "attributes resolve from the inventory's ontology tagging).",
+        description="Operational store the value resolves from once the AI "
+        "system is registered. Optional when skos_scheme alone defines the "
+        "value space (classification attributes resolve from the inventory's "
+        "ontology tagging).",
+    )
+    pre_registration_source: Literal["triage_record"] | None = Field(
+        None,
+        description="Where the value resolves from BEFORE the AI system is "
+        "registered. Intake screens on a handful of these attributes while "
+        "there is no inventory entry to read yet: the request has been "
+        "triaged but registration does not commit until a fast-track "
+        "approval or a decision to proceed (ADR-033 D4). Absent means the "
+        "attribute simply does not resolve before registration, which is "
+        "correct for anything intake has no basis to answer.",
     )
     skos_scheme: str | None = Field(
         None, pattern=CURIE_PATTERN,
@@ -84,4 +95,26 @@ class SystemAttribute(AshMaticsBaseModel):
     def _superseded_only_when_deprecated(self) -> "SystemAttribute":
         if self.superseded_by and not self.deprecated:
             raise ValueError("superseded_by is set on an attribute not marked deprecated")
+        return self
+
+    @model_validator(mode="after")
+    def _pre_registration_needs_a_registered_source(self) -> "SystemAttribute":
+        """
+        An attribute that resolves before registration must also resolve
+        after it. ``pre_registration_source`` says where the value comes
+        from in the gap; it never replaces the operational store, because
+        the system does get registered and the value has to keep resolving.
+        A pre-registration source on an attribute that resolves nowhere
+        afterwards describes something that works at intake and then stops,
+        which is not a thing the framework can evaluate. ``skos_scheme``
+        counts: a classification attribute resolves from the inventory's
+        ontology tagging without naming a store, which is how
+        ``system.aiParadigm`` is registered.
+        """
+        if self.pre_registration_source and not (self.source or self.skos_scheme):
+            raise ValueError(
+                "pre_registration_source is set on an attribute that resolves nowhere "
+                "after registration: it says where the value resolves before "
+                "registration, not instead of it"
+            )
         return self
