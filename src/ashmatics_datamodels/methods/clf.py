@@ -61,7 +61,7 @@ class SystemAttribute(AshMaticsBaseModel):
         "value space (classification attributes resolve from the inventory's "
         "ontology tagging).",
     )
-    pre_registration_source: Literal["triage_record"] | None = Field(
+    pre_registration_source: Literal["triage_record", "sourcing_decision_record"] | None = Field(
         None,
         description="Where the value resolves from BEFORE the AI system is "
         "registered. Intake screens on a handful of these attributes while "
@@ -69,7 +69,11 @@ class SystemAttribute(AshMaticsBaseModel):
         "triaged but registration does not commit until a fast-track "
         "approval or a decision to proceed (ADR-033 D4). Absent means the "
         "attribute simply does not resolve before registration, which is "
-        "correct for anything intake has no basis to answer.",
+        "correct for anything intake has no basis to answer. "
+        "``triage_record`` is the Triage Record screens. "
+        "``sourcing_decision_record`` is the Sourcing Decision Record "
+        "(WP-SA-01), which says what is built here and what is bought before "
+        "any system exists; ``system.solutionShape`` is derived from it.",
     )
     skos_scheme: str | None = Field(
         None, pattern=CURIE_PATTERN,

@@ -1,6 +1,12 @@
 ## CHANGELOG for the Common DataModels supporting Asher FORGE
 *Copyright 2026 Asher Informatics PBC All Rights Reserved*
 
+### v0.17.1 (2026-09-20) — ASHFORGE-370 — pre_registration_source names a second store
+
+- `methods.SystemAttribute.pre_registration_source` now accepts **`"sourcing_decision_record"`** as well as `"triage_record"`. CHAR's registry (aigov-framework SA-11, `system.solutionShape`) registers an attribute that resolves before registration from the Sourcing Decision Record (WP-SA-01), and the contract only knew the Triage Record. `base.AshMaticsBaseModel` validates the value, so `tests/methods/test_clf_registry.py::test_every_registered_attribute_validates` failed against framework `v0.16.4`: the same class of drift 0.17.0 fixed for `triage_record`.
+- Found by running that test against the framework checkout at `v0.16.4`. CHAR did not check datamodels against 0.16.3 or 0.16.4.
+- **Not added, on purpose:** a `SolutionShape` enum (`vended-application`, `local-core`, `composed-agent`) and the CHAR 0.16.3 to 0.16.4 items (`saOfflineRunApproval`, the trial gate outcomes, `trial_exit_result`, `runMode`). Those are CHAR token declarations and gate records that coreapp reads from its mirror, not contracts this package carries. An enum is worth adding when a consumer needs to validate against it.
+
 ### v0.17.0 (2026-09-18) — ADR-033 D4 — the attributes intake can screen before a system exists
 
 - `methods.SystemAttribute` gains **`pre_registration_source`** (`"triage_record"`), the store a `{{system.*}}` attribute resolves from **before** the AI system is registered. CLF attributes resolve against `ai_inventory + risk_register`, but intake has neither: the request has been triaged and registration does not commit until a fast-track approval or a decision to proceed (ADR-033 D4). Five attributes carry it in the framework's CLF 0.10.0 — `affectsPersons`, `aiParadigm`, `actionAuthority`, `sourcing` and `class` — which are exactly the ones intake screens on. Absent means the attribute does not resolve before registration, which is correct for anything intake has no basis to answer.
