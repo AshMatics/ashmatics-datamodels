@@ -14,7 +14,7 @@
 
 [project]
 name = "ashmatics-datamodels"
-version = "0.17.1"  # CLF: pre_registration_source also accepts sourcing_decision_record (system.solutionShape)
+version = "0.18.0"  # registry: SolutionShape (system.solutionShape asked at intake)
 description = "Canonical Pydantic data models for AshMatics healthcare applications - FDA vocabulary, regulatory schemas, and clinical AI use cases"
 authors = [
     {name = "Asher Informatics PBC", email = "info@asherinformatics.com"}

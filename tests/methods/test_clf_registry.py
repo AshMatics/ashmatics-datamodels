@@ -32,7 +32,7 @@ import pytest
 
 from ashmatics_datamodels.common.enums import SignalAccess
 from ashmatics_datamodels.methods import SystemAttribute
-from ashmatics_datamodels.registry import RegistrySourcing
+from ashmatics_datamodels.registry import RegistrySourcing, SolutionShape
 from ashmatics_datamodels.risk import HarmLevel, RiskTier
 
 
@@ -84,6 +84,13 @@ def test_sourcing_matches_the_derived_triad(registered):
     spec = registered["system.sourcing"]
     assert set(spec["allowed_values"]) == {m.value for m in RegistrySourcing}
     assert "skos_scheme" not in spec  # derived product vocabulary, no scheme
+
+
+def test_solution_shape_matches_the_enum(registered):
+    """system.solutionShape is CHAR product vocabulary, carried inline like sourcing."""
+    spec = registered["system.solutionShape"]
+    assert set(spec["allowed_values"]) == {m.value for m in SolutionShape}
+    assert "skos_scheme" not in spec
 
 
 def test_superseded_by_requires_deprecated():

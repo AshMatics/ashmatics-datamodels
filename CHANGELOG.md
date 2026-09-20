@@ -1,6 +1,13 @@
 ## CHANGELOG for the Common DataModels supporting Asher FORGE
 *Copyright 2026 Asher Informatics PBC All Rights Reserved*
 
+### v0.18.0 (2026-09-20) — ASHFORGE-370 — the solution shape is asked at intake
+
+- Added `registry.SolutionShape` (`vended-application`, `local-core`, `composed-agent`), the value space of CHAR's `system.solutionShape` (SA-11). Declared `PRODUCT` in `REGISTRY_BINDINGS`: CHAR carries the values inline with no `skos_scheme`, as it does for `system.sourcing`, and the ontology has no scheme for it.
+- **Why now.** J. Kalafut ruled on 2026-09-20 that intake asks the shape as a first read, as a screened attribute (Triage Record, screen 10). Before that CHAR derived it and never asked it, so no consumer needed an enum. Coreapp now stores the intake answer and needs the value space.
+- **Not added, on purpose:** a function that derives the shape. CHAR derives it from the six layer dispositions of the Sourcing Decision Record (SA.BP01), and this package has no model of that record. It is worth adding with the record. The derived value governs after registration, and a difference from the intake answer re-opens the triage route.
+- `tests/methods/test_clf_registry.py::test_solution_shape_matches_the_enum` compares the registry's `allowed_values` to the enum, the same guard `system.sourcing` has. The `sourcing_decision_record` value that 0.17.1 added to `pre_registration_source` stays valid.
+
 ### v0.17.1 (2026-09-20) — ASHFORGE-370 — pre_registration_source names a second store
 
 - `methods.SystemAttribute.pre_registration_source` now accepts **`"sourcing_decision_record"`** as well as `"triage_record"`. CHAR's registry (aigov-framework SA-11, `system.solutionShape`) registers an attribute that resolves before registration from the Sourcing Decision Record (WP-SA-01), and the contract only knew the Triage Record. `base.AshMaticsBaseModel` validates the value, so `tests/methods/test_clf_registry.py::test_every_registered_attribute_validates` failed against framework `v0.16.4`: the same class of drift 0.17.0 fixed for `triage_record`.

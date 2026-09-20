@@ -128,6 +128,42 @@ class SystemClass(str, Enum):
     ADMINISTRATIVE_OPERATIONAL = "administrative-operational"
 
 
+class SolutionShape(str, Enum):
+    """
+    CHAR solution shape: *what the solution is, structurally*, as CHAR's
+    content layer asks it (SA-11). It is ``{{system.solutionShape}}`` in the
+    Conditional Logic Framework.
+
+    - ``VENDED_APPLICATION`` — a supplier's application, used as supplied. The
+      organization configures its settings, connects it and monitors it.
+    - ``LOCAL_CORE`` — a model or algorithmic core the organization trained,
+      adapted or wrote.
+    - ``COMPOSED_AGENT`` — an agent or automation the organization authored on
+      a supplier's platform. The prompts, tools and knowledge sources are its
+      own work. The model and the platform are not.
+
+    Asked at intake as a first read (Triage Record, screen 10), the same way
+    ``system.sourcing`` is. CHAR derives the value from the layer dispositions
+    of the Sourcing Decision Record at SA.BP01 (``model-core`` built here gives
+    ``LOCAL_CORE``, else an orchestration, agent-platform or knowledge-sources
+    layer configured or built here gives ``COMPOSED_AGENT``, else
+    ``VENDED_APPLICATION``). The derived value governs after registration. A
+    difference from the intake answer re-opens the triage route. No function
+    in this package derives it yet, because the layer record has no model here.
+
+    Not :class:`RegistrySourcing`. Sourcing says who must originate the
+    governance evidence. Shape says what the thing is. A composed agent is
+    usually ``hybrid``, but neither value can be read from the other.
+
+    Kebab-case, one canonical spelling, as :class:`SystemClass`. Declared
+    ``PRODUCT`` in :mod:`.bindings`.
+    """
+
+    VENDED_APPLICATION = "vended-application"
+    LOCAL_CORE = "local-core"
+    COMPOSED_AGENT = "composed-agent"
+
+
 class RegistryAIType(str, Enum):
     """
     AI architectural paradigm, for governance routing.

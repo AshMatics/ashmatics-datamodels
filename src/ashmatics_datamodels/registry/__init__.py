@@ -48,6 +48,7 @@ from .enums import (
     RegistryCategory,
     RegistryDeployment,
     RegistrySourcing,
+    SolutionShape,
     SourcingChannel,
     SystemClass,
 )
@@ -62,6 +63,7 @@ __all__ = [
     "PortfolioSizeBucket",
     "OrgSourcingMix",
     "SystemClass",
+    "SolutionShape",
     "is_clinical_use",
     "portfolio_size_bucket",
     "org_sourcing_mix",

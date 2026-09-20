@@ -44,6 +44,7 @@ from .enums import (
     RegistryCategory,
     RegistryDeployment,
     RegistrySourcing,
+    SolutionShape,
     SourcingChannel,
     SystemClass,
 )
@@ -155,6 +156,17 @@ REGISTRY_BINDINGS: tuple[SchemeBinding, ...] = (
             "with no CURIE keeps that decision visible in every test run. "
             "Mint under the name SystemClassScheme, not GovernanceProfileScheme "
             "— 'profile' is ADR-016's word."
+        ),
+    ),
+    SchemeBinding(
+        enum=SolutionShape,
+        status=BindingStatus.PRODUCT,
+        note=(
+            "CHAR structural vocabulary (SA-11), as system.sourcing's derived "
+            "triad: CHAR's registry carries allowed_values inline and no "
+            "skos_scheme. Asked at intake, derived from the layer dispositions "
+            "at SA.BP01. Revisit if the graph ever needs the shape on "
+            "ash:AIapplication."
         ),
     ),
 )
