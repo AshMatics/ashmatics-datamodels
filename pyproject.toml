@@ -14,7 +14,7 @@
 
 [project]
 name = "ashmatics-datamodels"
-version = "0.18.0"  # registry: SolutionShape (system.solutionShape asked at intake)
+version = "0.19.0"  # org: site roles, ADR-057 (a site groups CHAR roles, holder person or agent)
 description = "Canonical Pydantic data models for AshMatics healthcare applications - FDA vocabulary, regulatory schemas, and clinical AI use cases"
 authors = [
     {name = "Asher Informatics PBC", email = "info@asherinformatics.com"}

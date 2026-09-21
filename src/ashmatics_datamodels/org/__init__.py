@@ -25,6 +25,8 @@ Usage::
         ParentRelationship,
         GovernanceAutonomy,
         UnitGranularity,
+        ApprovedSiteRoleSet,
+        SiteRole,
     )
 """
 
@@ -35,6 +37,13 @@ from .enums import (
     UnitGranularity,
 )
 from .organization import OrganizationModel
+from .site_roles import (
+    ApprovedSiteRoleSet,
+    SiteRole,
+    SiteRoleAdjustment,
+    SiteRoleHolder,
+    SiteRoleHolderKind,
+)
 
 __all__ = [
     "OrganizationModel",
@@ -42,4 +51,10 @@ __all__ = [
     "ParentRelationship",
     "GovernanceAutonomy",
     "UnitGranularity",
+    # site roles (ADR-057)
+    "ApprovedSiteRoleSet",
+    "SiteRole",
+    "SiteRoleAdjustment",
+    "SiteRoleHolder",
+    "SiteRoleHolderKind",
 ]

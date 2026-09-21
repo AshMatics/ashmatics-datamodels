@@ -1,6 +1,14 @@
 ## CHANGELOG for the Common DataModels supporting Asher FORGE
 *Copyright 2026 Asher Informatics PBC All Rights Reserved*
 
+### v0.19.0 (2026-09-21) — ASHFORGE-370 — site roles, ADR-057
+
+- Added `org.site_roles`: `SiteRole`, `ApprovedSiteRoleSet`, `SiteRoleAdjustment`, `SiteRoleHolder`, `SiteRoleHolderKind`. ADR-057 D1: a hospital names its own roles, and one site role groups several CHAR responsibility tokens — CHAR's slot mechanism does the class-binding axis, never the grouping axis, and coreapp does not duplicate it. Modeled on `methods.ApprovedMethodSet` (D8): the CHAR registry is the exemplar, `ApprovedSiteRoleSet.roles` is the org-resolved list, `adjustments` is provenance of every deviation from a straight token mapping, rationale mandatory.
+- `SiteRole.covers` holds CHAR role/slot tokens exactly as CHAR spells them (and exactly as WS-25 writes them onto a lane), undifferentiated — **no "is class bound" flag is stored**. D3: which token is a slot, and what class it resolves to, is answered by the CHAR mirror at read time, in coreapp; storing that answer a second time here would drift. Not modeled in this package at all.
+- `SiteRoleHolder` (D4): the first non-human actor this package models. `kind` (`person` / `agent`) plus `holder_id` records who holds a role; it grants nothing, executes nothing, authorizes nothing.
+- `SiteRole` carries the `MethodCandidate` proposal-provenance shape (D7) — `agent_rank`, `accepted_at`, `accepted_by`, `rejected_at`, `customization_note` — so an assistant-proposed grouping can be stored before a GovAdmin accepts it. `holder` is legitimately `None` on an unaccepted proposal; `SiteRole.is_accepted` is the one predicate every reader should use, never restated.
+- Deliberately not ontology-anchored, the same posture `methods.method_sets` takes: a site role is customer org structure and `forge:` is its eventual home, but minting that vocabulary is deferred until the shape has settled (ADR-048 §8). `ANNOTATED_MODELS` in `tests/org/test_ontology_binding.py` is an explicit tuple (`OrganizationModel` only), so an unannotated model here does not fail that guard.
+
 ### v0.18.0 (2026-09-20) — ASHFORGE-370 — the solution shape is asked at intake
 
 - Added `registry.SolutionShape` (`vended-application`, `local-core`, `composed-agent`), the value space of CHAR's `system.solutionShape` (SA-11). Declared `PRODUCT` in `REGISTRY_BINDINGS`: CHAR carries the values inline with no `skos_scheme`, as it does for `system.sourcing`, and the ontology has no scheme for it.
