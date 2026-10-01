@@ -228,3 +228,23 @@ def test_enum_values_are_scheme_concepts(graph):
                 f"(legal values: {sorted(legal)})"
             )
     assert checked, "no scheme-bound enum values were checked"
+
+
+def test_site_of_care_covers_its_scheme(graph):
+    """Reverse completeness for SiteOfCare: it single-sources ash:SemanticType_T9003,
+    so a site of care added to the ontology without an enum member is drift too.
+    Ontology v2.12.0 added virtual care and two behavioral-health settings
+    (ASHFORGE-370); this is what fails when the next one lands unbound."""
+    from ashmatics_datamodels.org import SiteOfCare
+
+    scheme = _expand("ash:SemanticType_T9003")
+    concepts = set(graph.subjects(RDF.type, scheme)) | set(
+        graph.subjects(SKOS.inScheme, scheme)
+    )
+    notations = {str(n) for c in concepts for n in graph.objects(c, SKOS.notation)}
+    assert notations, "ash:SemanticType_T9003 has no concepts with notations"
+    enum_values = {m.value for m in SiteOfCare}
+    assert notations - enum_values == set(), (
+        f"ash:SemanticType_T9003 concepts with no SiteOfCare member: "
+        f"{sorted(notations - enum_values)}"
+    )

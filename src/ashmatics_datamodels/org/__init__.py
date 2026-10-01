@@ -34,6 +34,7 @@ from .enums import (
     GovernanceAutonomy,
     ParentRelationship,
     ProviderOrgType,
+    SiteOfCare,
     UnitGranularity,
 )
 from .organization import OrganizationModel
@@ -48,6 +49,7 @@ from .site_roles import (
 __all__ = [
     "OrganizationModel",
     "ProviderOrgType",
+    "SiteOfCare",
     "ParentRelationship",
     "GovernanceAutonomy",
     "UnitGranularity",

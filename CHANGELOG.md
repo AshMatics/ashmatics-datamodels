@@ -1,6 +1,13 @@
 ## CHANGELOG for the Common DataModels supporting Asher FORGE
 *Copyright 2026 Asher Informatics PBC All Rights Reserved*
 
+### v0.20.0 (2026-09-30) — ASHFORGE-370 — site of care
+
+- Added `org.SiteOfCare`, the first datamodels type for `ash:SemanticType_T9003`. It has ten members whose values are the `ash:soc-*` `skos:notation` tokens, including the three that ontology v2.12.0 (v0.19.0) added for Beacon Health's intake forms: `virtual_care`, `inpatient_psychiatric` and `behavioral_health_outpatient`. `home_remote` now means the patient's home or community setting only; a clinician reaching the patient by video, phone or messaging is `virtual_care`. The aigov-framework supplier intake contract can bind its site-of-care scheme to this type instead of holding it inline.
+- `OrganizationModel.sites_of_care: list[SiteOfCare]` (default empty) is bound by `x_ontology_property: forge:siteOfCareType` and `x_ontology_scheme: ash:SemanticType_T9003`. Its FORGE domain is `forge:Facility`, one edge per facility. The flat model holds the set until a Facility entity exists, the same posture as the other Facility-domain fields. The field is optional, so existing payloads still validate.
+- The org ontology guard gained `test_site_of_care_covers_its_scheme`, a reverse-completeness check. A site of care added to the ontology without a `SiteOfCare` member fails CI. The existing forward check already rejects a member with no matching concept. Both need ontology >= v2.12.0 (`ASHMATICS_ONTOLOGY_DIR`, or the sibling checkout).
+- `methods.FairnessFactor` is deliberately unchanged. It keeps concept local names (`ff-age`), the methods-module convention recorded in ontology ADR-002 for the CHAR registry and the CLF grammar.
+
 ### v0.19.0 (2026-09-21) — ASHFORGE-370 — site roles, ADR-057
 
 - Added `org.site_roles`: `SiteRole`, `ApprovedSiteRoleSet`, `SiteRoleAdjustment`, `SiteRoleHolder`, `SiteRoleHolderKind`. ADR-057 D1: a hospital names its own roles, and one site role groups several CHAR responsibility tokens — CHAR's slot mechanism does the class-binding axis, never the grouping axis, and coreapp does not duplicate it. Modeled on `methods.ApprovedMethodSet` (D8): the CHAR registry is the exemplar, `ApprovedSiteRoleSet.roles` is the org-resolved list, `adjustments` is provenance of every deviation from a straight token mapping, rationale mandatory.
