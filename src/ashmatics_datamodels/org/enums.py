@@ -104,6 +104,34 @@ class ProviderOrgType(str, Enum):
     FEDERAL = "federal"
 
 
+class SiteOfCare(str, Enum):
+    """
+    Where care happens — the ``forge:siteOfCareType`` edge on a facility, and the
+    one site-of-care axis the aigov-framework supplier intake contract binds.
+
+    Binds 1:1 to ``ash:SemanticType_T9003`` (SiteOfCare), whose ``ash:soc-*``
+    concepts declare membership by ``rdf:type``; member values match
+    ``skos:notation``. Ontology v2.12.0 (v0.19.0) added virtual care and the two
+    behavioral-health settings for Beacon Health's intake forms (ASHFORGE-370), and
+    narrowed ``home_remote`` to the patient's home or community: a clinician
+    reaching the patient by video, phone or messaging is ``VIRTUAL_CARE``.
+
+    ``VIRTUAL_CARE`` is a way of delivering care rather than a place, so a facility
+    is not normally typed with it; it is a legal value for "where is this used".
+    """
+
+    EMERGENCY_DEPARTMENT = "emergency_department"
+    ICU = "icu"
+    INPATIENT_GENERAL = "inpatient_general"
+    INPATIENT_PSYCHIATRIC = "inpatient_psychiatric"
+    OUTPATIENT_CLINIC = "outpatient_clinic"
+    BEHAVIORAL_HEALTH_OUTPATIENT = "behavioral_health_outpatient"
+    AMBULATORY_SURGICAL = "ambulatory_surgical"
+    PERIOPERATIVE = "perioperative"
+    HOME_REMOTE = "home_remote"
+    VIRTUAL_CARE = "virtual_care"
+
+
 class UnitGranularity(str, Enum):
     """
     Granularity of an organizational or clinical unit — the Axis-2 driving function

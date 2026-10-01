@@ -53,6 +53,7 @@ from .enums import (
     GovernanceAutonomy,
     ParentRelationship,
     ProviderOrgType,
+    SiteOfCare,
     UnitGranularity,
 )
 
@@ -92,6 +93,17 @@ class OrganizationModel(TimestampedModel):
         json_schema_extra={
             "x_ontology_property": "forge:organizationType",
             "x_ontology_scheme": "ash:SemanticType_T093",
+        },
+    )
+    sites_of_care: list[SiteOfCare] = Field(
+        default_factory=list,
+        description="Sites of care this organization's facilities provide, as ash "
+        "SiteOfCare concepts (ash:SemanticType_T9003). Values are ash:soc-* "
+        "skos:notation tokens. FORGE domain is forge:Facility (one edge per "
+        "facility); the flat model holds the set until a Facility entity exists.",
+        json_schema_extra={
+            "x_ontology_property": "forge:siteOfCareType",
+            "x_ontology_scheme": "ash:SemanticType_T9003",
         },
     )
     segment: str | None = Field(
