@@ -131,6 +131,9 @@ The library follows a domain-driven structure:
   - `record.py`: `HazardRecord` — one record per hazardous situation, ported from the framework's `WP-RM-01-Hazard-Analysis-Report.md` field contract (the markdown stays the authored end); harm level and earned depth are properties, never stored
   - `derive.py`: `analysis_depth`, `system_harm_level`, `system_risk_tier` — **tier per record from `DEFAULT_RISK_TIER_TABLE`, then the max**, with `RiskTierOverride` kept beside the derivation (decided 2026-09-14). A change to the table is a CHAR content decision
   - `bindings.py`: `RISK_BINDINGS`; `SignalAccess` itself lives in `common/enums.py` as a system facet (notations, not local names)
+  - `failure_analysis.py` (0.21.0): `FailureClassScreening` / `FailureClassScreeningSet` (the per-system failure-class screen, stored on the risk file) and `FailureAnalysisEntry` (RM-02 Step 2, per credible class per record; `HazardRecord.failure_analysis`)
+  - `watch.py` (0.21.0): `FailureWatchListRow` and `WatchedItem`; `HazardRecord.watched_items` accepts a bare surveillance-plan id or the typed row, read through `watched_item_ids` / `watch_list_rows`
+  - 0.21.0 also adds `HazardRecord.method_used` / `method_rationale_ref`, `EventLink.link_type` (`LinkType`) and `DimensionHarm.not_reachable` with a reason (a not-reachable dimension has no level and is left out of the maximum)
   - Lives outside `artifacts/` on purpose: `artifacts` would import it and it needs `registry.enums`, and a hazard record is a record inside a work product, not the artifact plane
 
 - **utils/** - Parsing and normalization utilities (future)

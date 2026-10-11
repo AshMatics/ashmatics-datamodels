@@ -52,11 +52,17 @@ from .enums import (
     HarmDimension,
     HarmLevel,
     LikelihoodBand,
+    LinkType,
     P1Band,
     P2Band,
     ProbabilityReduced,
     RiskTier,
     RiskTierBasis,
+)
+from .failure_analysis import (
+    FailureAnalysisEntry,
+    FailureClassScreening,
+    FailureClassScreeningSet,
 )
 from .record import (
     DepthAssignment,
@@ -70,6 +76,7 @@ from .record import (
     ResidualPosition,
     RiskControl,
 )
+from .watch import FailureWatchListRow, WatchedItem
 
 __all__ = [
     # record
@@ -83,9 +90,16 @@ __all__ = [
     "RiskControl",
     "ResidualPosition",
     "ResidualAcceptance",
+    # failure-class screening and analysis (0.21.0)
+    "FailureClassScreening",
+    "FailureClassScreeningSet",
+    "FailureAnalysisEntry",
+    "FailureWatchListRow",
+    "WatchedItem",
     # vocabularies
     "HarmLevel",
     "HarmDimension",
+    "LinkType",
     "AnalysisDepth",
     "P1Band",
     "P2Band",

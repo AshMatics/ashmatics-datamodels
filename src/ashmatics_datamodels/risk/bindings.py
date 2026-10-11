@@ -30,6 +30,7 @@ from .enums import (
     HarmDimension,
     HarmLevel,
     LikelihoodBand,
+    LinkType,
     P1Band,
     P2Band,
     ProbabilityReduced,
@@ -95,6 +96,11 @@ RISK_BINDINGS: tuple[SchemeBinding, ...] = (
         enum=ControlTier,
         status=BindingStatus.PRODUCT,
         note=_CHAR_CONTENT.format(src="RMP §6, ISO 14971 order"),
+    ),
+    SchemeBinding(
+        enum=LinkType,
+        status=BindingStatus.PRODUCT,
+        note=_CHAR_CONTENT.format(src="RMP §4, WP-RM-01 sequence of events"),
     ),
     SchemeBinding(
         enum=ProbabilityReduced,
