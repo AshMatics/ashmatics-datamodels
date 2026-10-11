@@ -35,6 +35,12 @@ the site's catalog, needs other documents and stays with their consumers.
 Derived, never stored: a record's harm level (max across dimensions) and the
 depth it earns are properties, so they cannot disagree with the scores they
 come from. The system rollups are in :mod:`.derive`.
+
+0.21.0 (ASHFORGE-827) adds, all optional so every earlier payload validates:
+the method chosen for the record, a type on each link, a dimension recorded as
+not reachable, the per-class failure analysis, and a typed watch-list row in
+``watched_items``. The sub-models for the last two are in
+:mod:`.failure_analysis` and :mod:`.watch`.
 """
 
 from datetime import date
@@ -43,6 +49,7 @@ from pydantic import Field, model_validator
 
 from ashmatics_datamodels.common.base import AshMaticsBaseModel
 from ashmatics_datamodels.failure_modes.enums import AIFailureMode
+from ashmatics_datamodels.methods.methods import MethodId
 from ashmatics_datamodels.registry.enums import RegistrySourcing
 
 from .derive import analysis_depth
@@ -54,10 +61,13 @@ from .enums import (
     AnalysisDepth,
     ControlTier,
     HarmLevel,
+    LinkType,
     P1Band,
     P2Band,
     ProbabilityReduced,
 )
+from .failure_analysis import FailureAnalysisEntry
+from .watch import FailureWatchListRow, WatchedItem
 
 
 class EventLink(AshMaticsBaseModel):
@@ -74,21 +84,81 @@ class EventLink(AshMaticsBaseModel):
         description="The failure class this link is an instance of, if any.",
         json_schema_extra={"x_ontology_scheme": "ash:AIFailureModeScheme"},
     )
-
-
-class DimensionHarm(AshMaticsBaseModel):
-    """Harm on one dimension, scored against that dimension's anchors."""
-
-    level: HarmLevel
-    rationale: str | None = Field(
-        None, description="What could follow, in the anchor's terms."
+    link_type: LinkType | None = Field(
+        None,
+        description="Whether this link is technical, human or organizational. "
+        "None: not typed, which is every payload written before 0.21.0.",
     )
 
 
+class DimensionHarm(AshMaticsBaseModel):
+    """Harm on one dimension: scored against that dimension's anchors, or
+    recorded as not reachable with the reason.
+
+    A dimension is never blank: "a dimension the situation cannot reach is
+    recorded as not reachable with the reason, never left blank" (SOP-RM-01
+    Step 4). So exactly one of ``level`` and ``not_reachable`` is set. A
+    not-reachable dimension has no level at all rather than a placeholder one,
+    so it cannot contribute to the maximum by accident or be read later as a
+    zero.
+
+    ``level`` is ``None`` only on a not-reachable dimension; every payload
+    written before 0.21.0 scored all four and validates unchanged. Because the
+    model validates on assignment, switch a dimension between the two states by
+    replacing it whole, not by setting one field.
+    """
+
+    level: HarmLevel | None = Field(
+        None, description="Required unless the dimension is not reachable."
+    )
+    rationale: str | None = Field(
+        None, description="What could follow, in the anchor's terms."
+    )
+    not_reachable: bool = Field(
+        False,
+        description="True where the situation cannot reach this dimension.",
+    )
+    not_reachable_reason: str | None = Field(
+        None,
+        min_length=1,
+        description="Why it cannot. Required when not_reachable, refused otherwise.",
+    )
+
+    @model_validator(mode="after")
+    def _scored_or_not_reachable_with_reason(self) -> "DimensionHarm":
+        if self.not_reachable:
+            if self.level is not None:
+                raise ValueError(
+                    "a not-reachable dimension has no level; score it or "
+                    "record it as not reachable, not both"
+                )
+            if not self.not_reachable_reason:
+                raise ValueError(
+                    "not_reachable requires not_reachable_reason: a dimension "
+                    "the situation cannot reach is recorded with the reason, "
+                    "never left blank"
+                )
+        else:
+            if self.level is None:
+                raise ValueError(
+                    "a dimension is scored or recorded as not reachable with "
+                    "the reason; it is never left blank"
+                )
+            if self.not_reachable_reason is not None:
+                raise ValueError(
+                    "not_reachable_reason is only for a dimension recorded as "
+                    "not_reachable"
+                )
+        return self
+
+
 class HarmAssessment(AshMaticsBaseModel):
-    """Harm on all four ``harm_model.yaml`` dimensions. All four are required:
-    an unscored dimension reads later as a zero, which is how the staff and
-    economic harm the pre-ADR-020 scale could not carry went unrecorded."""
+    """Harm on all four ``harm_model.yaml`` dimensions. All four are present:
+    an unaddressed dimension reads later as a zero, which is how the staff and
+    economic harm the pre-ADR-020 scale could not carry went unrecorded. Each
+    is either scored or recorded as not reachable (:class:`DimensionHarm`), and
+    at least one is scored: a situation that reaches no dimension is not a
+    hazardous situation, and has no harm level to derive."""
 
     patient: DimensionHarm
     staff: DimensionHarm
@@ -97,10 +167,29 @@ class HarmAssessment(AshMaticsBaseModel):
 
     @property
     def level(self) -> HarmLevel:
-        """The maximum across the four dimensions, never an average."""
+        """The maximum across the SCORED dimensions, never an average. A
+        dimension recorded as not reachable has no level and does not enter
+        the maximum."""
         return HarmLevel(
-            max(d.level for d in (self.patient, self.staff, self.economic, self.reputational))
+            max(
+                d.level
+                for d in (self.patient, self.staff, self.economic, self.reputational)
+                if d.level is not None
+            )
         )
+
+    @model_validator(mode="after")
+    def _reaches_at_least_one_dimension(self) -> "HarmAssessment":
+        if all(
+            d.not_reachable
+            for d in (self.patient, self.staff, self.economic, self.reputational)
+        ):
+            raise ValueError(
+                "every dimension is recorded as not reachable; a hazardous "
+                "situation reaches at least one, and the harm level is the "
+                "maximum over the dimensions it does"
+            )
+        return self
 
 
 class DepthAssignment(AshMaticsBaseModel):
@@ -238,14 +327,39 @@ class HazardRecord(AshMaticsBaseModel):
     )
     harm: HarmAssessment
     depth: DepthAssignment
+    method_used: MethodId | None = Field(
+        None,
+        description="The hazard-analysis method chosen for this record "
+        "(SOP-RM-01 Step 5), an mth:// id read by SOP-RM-02 Step 3. Shape "
+        "only: whether the id is registered, and whether the site's approved "
+        "set allows it, are checks against the registry and stay with the "
+        "consumer. None: not yet chosen.",
+        json_schema_extra={"x_ontology_scheme": "ashcai:GovernanceMethodScheme"},
+    )
+    method_rationale_ref: str | None = Field(
+        None,
+        min_length=1,
+        description="Id of the event that carries the rationale for the "
+        "method: what was considered, what was excluded and why. The record "
+        "holds the choice; the reasoning is an event (ADR-061 D3).",
+    )
     initial: ProbabilityPosition
     acceptability_initial: Acceptability
     controls: list[RiskControl] = Field(default_factory=list)
     residual: ResidualPosition | None = None
     acceptance: ResidualAcceptance | None = None
-    watched_items: list[str] = Field(
+    failure_analysis: list[FailureAnalysisEntry] = Field(
         default_factory=list,
-        description="Ids of the Risk Surveillance Plan items tracing here.",
+        description="SOP-RM-02 Step 2: one entry per credible failure class, "
+        "for this record. Empty until the review has worked through it.",
+    )
+    watched_items: list[WatchedItem] = Field(
+        default_factory=list,
+        description="What watches this record: a bare id of a Risk "
+        "Surveillance Plan item (every payload before 0.21.0), or the typed "
+        "watch-list row. Both may appear in one list; read through "
+        "watched_item_ids and watch_list_rows rather than restating the "
+        "distinction.",
     )
     reanalysis_triggers: list[str] = Field(
         default_factory=list,
@@ -268,6 +382,23 @@ class HazardRecord(AshMaticsBaseModel):
         return {AIFailureMode(link.failure_mode) for link in self.sequence_of_events if link.failure_mode}
 
     @property
+    def watch_list_rows(self) -> list[FailureWatchListRow]:
+        """The typed rows of ``watched_items``, in order."""
+        return [w for w in self.watched_items if isinstance(w, FailureWatchListRow)]
+
+    @property
+    def watched_item_ids(self) -> list[str]:
+        """The Risk Surveillance Plan item ids this record names: the bare ids,
+        and the ``item_id`` of each typed row that has one."""
+        ids: list[str] = []
+        for w in self.watched_items:
+            if isinstance(w, str):
+                ids.append(w)
+            elif w.item_id:
+                ids.append(w.item_id)
+        return ids
+
+    @property
     def unvalidated_controls(self) -> list[RiskControl]:
         """Verified or not, no validation yet — the list the register must be
         queryable for."""
@@ -275,6 +406,16 @@ class HazardRecord(AshMaticsBaseModel):
 
     @model_validator(mode="after")
     def _chain_is_consistent(self) -> "HazardRecord":
+        analysed: set[str] = set()
+        for entry in self.failure_analysis:
+            mode = str(entry.failure_mode)
+            if mode in analysed:
+                raise ValueError(
+                    f"{self.record_id}: failure class {mode} is analysed "
+                    "twice; one entry per credible class per record"
+                )
+            analysed.add(mode)
+
         earned = self.earned_depth
         tier = AnalysisDepth(self.depth.tier)
         if DEPTH_ORDINAL[tier] < DEPTH_ORDINAL[earned]:

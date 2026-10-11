@@ -71,6 +71,24 @@ class HarmDimension(str, Enum):
     REPUTATIONAL = "reputational"
 
 
+class LinkType(str, Enum):
+    """What kind of link one step in a sequence of events is.
+
+    The sequence of events is "the foreseeable technical, human and
+    organizational chain" from latent hazard to exposure (RMP §4; the CHAR
+    glossary). Typing the links is what lets an assessor see a chain made only
+    of technical links and ask where the human and organizational ones are.
+
+    Spelled ``organizational``, as CHAR spells it, not ``organisational`` as the
+    DHMO overlay does: the aigov-framework is the authored end of this
+    vocabulary and this package mirrors it.
+    """
+
+    TECHNICAL = "technical"
+    HUMAN = "human"
+    ORGANIZATIONAL = "organizational"
+
+
 class AnalysisDepth(str, Enum):
     """``harm_model.yaml`` ``analysis_depth[].tier`` — what a harm level earns.
 

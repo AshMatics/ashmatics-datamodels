@@ -14,7 +14,7 @@
 
 [project]
 name = "ashmatics-datamodels"
-version = "0.20.0"  # org: SiteOfCare, bound to ash:SemanticType_T9003 (ontology v2.12.0)
+version = "0.21.0"  # risk: the sub-models the hazard and risk application needs (ASHFORGE-827)
 description = "Canonical Pydantic data models for AshMatics healthcare applications - FDA vocabulary, regulatory schemas, and clinical AI use cases"
 authors = [
     {name = "Asher Informatics PBC", email = "info@asherinformatics.com"}
