@@ -10,7 +10,7 @@ This is **ashmatics-core-datamodels**, a canonical Pydantic data models library 
 - ashmatics-knowledgebase-tools (ingestion pipelines)
 - AI Watch applications
 
-Version: 0.16.0 as of 2026-09-14 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
+Version: 0.22.0 as of 2026-10-11 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
 
 ## Development Commands
 
@@ -112,6 +112,7 @@ The library follows a domain-driven structure:
 - **methods/** - CHAR governance-method contracts (aigov-framework ADR-011; ASHKBAPP-99)
   - `MethodDefinition`, `ApplicabilityProfile`, `MethodSet`, `ApprovedMethodSet`, `MethodRegistry`
   - CLF rule-grammar types shared with coreapp; ontology-bound enums guarded by rdflib tests
+  - 0.22.0 (ASHFORGE-828): `MethodFamily.HAZARD_ANALYSIS`; `MethodDefinition.depth_applicability` (`DepthApplicability`: where a method is mandatory, by harm level and tier) and `forbidden_decisions` (`ForbiddenDecision`, a closed list of four), both optional; `ConditionScope.RECORD` and `RecordAttribute` (the `{{record.*}}` attributes, source `hazard_record` or `analyst_judgement`)
 
 - **artifacts/** - aigov-framework ADR-006 artifact-plane contracts (ASHKBAPP-99)
   - `base_content.py`: KB base-content side (`ToolRef`, `PracticeView`, `BaseArtifact`, `CompiledView`)

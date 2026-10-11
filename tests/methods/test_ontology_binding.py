@@ -43,8 +43,10 @@ from rdflib import RDF, Graph, URIRef  # noqa: E402
 from rdflib.namespace import OWL, SKOS  # noqa: E402
 
 from ashmatics_datamodels.methods import (  # noqa: E402
+    AIParadigm,
     ApplicabilityProfile,
     MethodDefinition,
+    MethodFamily,
 )
 
 PREFIXES = {
@@ -250,4 +252,96 @@ def test_facet_enums_cover_their_schemes(graph):
         assert not missing, (
             f"{scheme}: ontology concepts with no enum member: "
             f"{sorted(missing)} — extend the enum (single-sourcing)"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Method families and the hazard analysis family (ASHFORGE-828, ontology 0.20.0)
+# ---------------------------------------------------------------------------
+
+METHOD_SCHEME = "ashcai:GovernanceMethodScheme"
+ASHCAI = PREFIXES["ashcai"]
+
+
+def _scheme_concepts(g: Graph) -> set[URIRef]:
+    scheme = _expand(METHOD_SCHEME)
+    return set(g.subjects(RDF.type, scheme)) | set(g.subjects(SKOS.inScheme, scheme))
+
+
+def _notation(g: Graph, concept: URIRef) -> str:
+    notations = [str(n) for n in g.objects(concept, SKOS.notation)]
+    assert len(notations) == 1, f"{concept}: expected one skos:notation, got {notations}"
+    return notations[0]
+
+
+def test_method_family_covers_its_family_concepts(graph):
+    """Reverse completeness for the family level only. The method concepts
+    under a family grow without the enum changing (the facet-scheme check above
+    skips this scheme for that reason), but ``MethodFamily`` claims to be the
+    family concepts 1:1, so a family concept with no member is drift too."""
+    families = {
+        _notation(graph, c)
+        for c in _scheme_concepts(graph)
+        if (c, SKOS.broader, None) not in graph
+    }
+    assert families, "no family concepts found in ashcai:GovernanceMethodScheme"
+    assert families == {m.value for m in MethodFamily}
+
+
+def test_hazard_analysis_family_is_anchored(graph):
+    """``MethodFamily.HAZARD_ANALYSIS`` is ``ashcai:gm-hazard-analysis``, and
+    the six ``mth://hazard.*`` concepts hang under it, each applying to every
+    ``ash:AIParadigmScheme`` concept (ontology 0.20.0)."""
+    family = URIRef(ASHCAI + "gm-hazard-analysis")
+    assert _has_type(graph, family, _expand(METHOD_SCHEME), SKOS.Concept)
+    assert _notation(graph, family) == MethodFamily.HAZARD_ANALYSIS.value
+
+    methods = {_notation(graph, c): c for c in graph.subjects(SKOS.broader, family)}
+    assert set(methods) == {
+        "mth://hazard.pha",
+        "mth://hazard.use_case_scenarios",
+        "mth://hazard.fmea",
+        "mth://hazard.fta",
+        "mth://hazard.hazop",
+        "mth://hazard.stpa",
+    }
+    applies_to_paradigm = URIRef(ASHCAI + "appliesToParadigm")
+    paradigms = {URIRef(PREFIXES["ash"] + p.value) for p in AIParadigm}
+    for method_id, concept in methods.items():
+        assert set(graph.objects(concept, applies_to_paradigm)) == paradigms, method_id
+
+
+def _framework_registry_path() -> Path | None:
+    env = os.environ.get("ASHMATICS_AIGOV_FRAMEWORK_DIR")
+    base = (
+        Path(env).expanduser()
+        if env
+        else Path(__file__).resolve().parents[2].parent / "ashmatics-aigov-framework"
+    )
+    path = base / "method_registry.yaml"
+    return path if path.is_file() else None
+
+
+def test_registry_method_ids_resolve_to_concepts(graph):
+    """ontology ADR-006: a registry ``method_id`` is the ``skos:notation`` of
+    exactly one concept in the scheme, and the registry ``family`` is the
+    notation of that concept's ``skos:broader`` parent. Needs both sibling
+    checkouts; red when the registry outpaces the ontology, which is the order
+    CHAR, then ontology, then datamodels is meant to prevent."""
+    yaml = pytest.importorskip("yaml")
+    path = _framework_registry_path()
+    if path is None:
+        pytest.skip("method_registry.yaml not found; set ASHMATICS_AIGOV_FRAMEWORK_DIR")
+    registry = yaml.safe_load(path.read_text())
+
+    by_notation: dict[str, list[URIRef]] = {}
+    for concept in _scheme_concepts(graph):
+        by_notation.setdefault(_notation(graph, concept), []).append(concept)
+
+    for method in registry["methods"]:
+        matches = by_notation.get(method["method_id"], [])
+        assert len(matches) == 1, f"{method['method_id']}: {len(matches)} concepts"
+        parents = list(graph.objects(matches[0], SKOS.broader))
+        assert [_notation(graph, parent) for parent in parents] == [method["family"]], (
+            method["method_id"]
         )

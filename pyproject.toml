@@ -14,7 +14,7 @@
 
 [project]
 name = "ashmatics-datamodels"
-version = "0.21.0"  # risk: the sub-models the hazard and risk application needs (ASHFORGE-827)
+version = "0.22.0"  # methods: the hazard analysis family, depth_applicability, forbidden_decisions and the record condition scope (ASHFORGE-828)
 description = "Canonical Pydantic data models for AshMatics healthcare applications - FDA vocabulary, regulatory schemas, and clinical AI use cases"
 authors = [
     {name = "Asher Informatics PBC", email = "info@asherinformatics.com"}

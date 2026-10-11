@@ -51,6 +51,38 @@ class MethodFamily(str, Enum):
     VALIDATION_STATISTICS = "validation_statistics"
     DRIFT_DETECTION = "drift_detection"
     EXPLAINABILITY = "explainability"
+    # ashcai:gm-hazard-analysis, ontology 0.20.0 / 2.13.0 (ASHFORGE-828). Six
+    # methods chosen per hazard record at SOP-RM-01 Step 5.
+    HAZARD_ANALYSIS = "hazard_analysis"
+
+
+class ForbiddenDecision(str, Enum):
+    """
+    A decision that applying a method never makes, whoever or whatever applies
+    it: a person, a tool, or an assistant proposing into the record. The closed
+    list of ``MethodDefinition.forbidden_decisions``, defined in the header of
+    the aigov-framework ``method_registry.yaml`` (family ``hazard_analysis``,
+    ASHFORGE-828).
+
+    Not ontology-anchored: no scheme mints these, and they are not applicability
+    or identity (ontology ADR-006), so nothing in the ontology would carry them.
+    """
+
+    DEFINE_SCALES = "define_scales"
+    """Set or change the harm model, the P1 and P2 bands, the matrix or an
+    acceptability ceiling. They are brought forward at SOP-RM-01 Step 1."""
+
+    SCORE_HARM = "score_harm"
+    """Score harm on a dimension. The assessor of that dimension does
+    (SOP-RM-01 Step 4)."""
+
+    DECIDE_GATE = "decide_gate"
+    """Decide a gate: depth (SOP-RM-01.G2), acceptance (SOP-RM-01.G4), or where
+    the equity question is answered (SOP-RM-02.G3)."""
+
+    DESIGN_BIAS_MITIGATION = "design_bias_mitigation"
+    """Design a bias mitigation or define a fairness metric. That is the
+    fairness practice's (SOP-EF-04)."""
 
 
 class MethodPhase(str, Enum):
@@ -97,12 +129,17 @@ class DeliveryMode(str, Enum):
 class ConditionScope(str, Enum):
     """
     Where a CLF condition token resolves: ``org`` (Blueprint context /
-    policy wizard responses, instantiation-time) or ``system`` (per-AI-system
-    attributes from the AI inventory and risk register, operational-time).
+    policy wizard responses, instantiation-time), ``system`` (per-AI-system
+    attributes from the AI inventory and risk register, operational-time) or
+    ``record`` (the features of ONE hazard record, operational-time; CLF
+    v0.11.0, ASHFORGE-828). A method chosen per hazard record reads
+    ``{{record.*}}``, never ``{{system.harmLevel}}``, which is the maximum over
+    a system's records.
     """
 
     ORG = "org"
     SYSTEM = "system"
+    RECORD = "record"
 
 
 class EvaluationTime(str, Enum):
