@@ -29,10 +29,11 @@ Usage::
         MethodSet,
         ApprovedMethodSet,
         SystemAttribute,
+        RecordAttribute,
     )
 """
 
-from .clf import SystemAttribute
+from .clf import RecordAttribute, SystemAttribute
 from .derive import member_provenance
 from .enums import (
     AIParadigm,
@@ -41,6 +42,7 @@ from .enums import (
     EvaluationTime,
     EvidenceType,
     FairnessFactor,
+    ForbiddenDecision,
     InputModality,
     MemberProvenance,
     MethodControlAction,
@@ -64,6 +66,7 @@ from .methods import (
     TOOL_TOKEN_PATTERN,
     ApplicabilityProfile,
     DefaultRule,
+    DepthApplicability,
     EvidenceRef,
     MethodDefinition,
     MethodReview,
@@ -79,6 +82,7 @@ __all__ = [
     "ApplicabilityProfile",
     "EvidenceRef",
     "DefaultRule",
+    "DepthApplicability",
     "MethodReview",
     # sets
     "MethodSet",
@@ -87,11 +91,13 @@ __all__ = [
     "MethodSetAdjustment",
     # CLF
     "SystemAttribute",
+    "RecordAttribute",
     "ConditionScope",
     "EvaluationTime",
     "MethodControlAction",
     # enums
     "MethodFamily",
+    "ForbiddenDecision",
     "MemberProvenance",
     "MethodPhase",
     "member_provenance",

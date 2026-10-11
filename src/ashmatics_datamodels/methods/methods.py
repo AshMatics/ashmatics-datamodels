@@ -39,7 +39,13 @@ bindings against the Turtle source.
 from datetime import date
 from typing import Annotated
 
-from pydantic import ConfigDict, Field, StringConstraints
+from pydantic import (
+    ConfigDict,
+    Field,
+    StringConstraints,
+    field_validator,
+    model_validator,
+)
 
 from ashmatics_datamodels.common.base import AshMaticsBaseModel
 from ashmatics_datamodels.common.enums import ActionAuthority
@@ -48,6 +54,7 @@ from .enums import (
     AIParadigm,
     EvidenceType,
     FairnessFactor,
+    ForbiddenDecision,
     InputModality,
     MethodFamily,
     MethodPhase,
@@ -94,8 +101,9 @@ class DefaultRule(AshMaticsBaseModel):
     """
     An exemplar default-selection rule: when ``condition`` holds for an AI
     system, this method is a rank-ordered default candidate. Conditions use
-    the CLF expression grammar with ``{{system.*}}`` tokens; every system
-    token must be registered in the CLF system scope (enforced by the
+    the CLF expression grammar with ``{{system.*}}`` tokens, or, for a method
+    chosen per hazard record, ``{{record.*}}`` tokens; every such token must
+    be registered in the CLF system or record scope (enforced by the
     aigov-framework registry validator, which has the CLF block in hand).
     """
 
@@ -116,6 +124,56 @@ class MethodReview(AshMaticsBaseModel):
     last_reviewed: date = Field(
         ..., description="Date of the last content review of this entry."
     )
+
+
+class DepthApplicability(AshMaticsBaseModel):
+    """
+    Where a method is MANDATORY, as against preferred (aigov-framework
+    ``method_registry.yaml``, header of the hazard analysis family;
+    ASHFORGE-828). ``default_for`` is preference, a rank among candidates;
+    this is the rule of ``harm_model.yaml``'s analysis depth in a form a gate
+    can read::
+
+        depth_applicability:
+          mandatory_at_harm_levels: [4, 5]
+          harm_model_tier: full_safety_analysis
+
+    THE READING IS ANY ONE OF. For a hazard record at harm level L, take the
+    methods of the family whose ``mandatory_at_harm_levels`` contains L; if
+    there are any, the method chosen for the record must be one of them. The
+    set is computed over the registry's family, not a site's narrowed set. A
+    method mandatory nowhere carries an empty list.
+
+    What this contract checks is what the record alone shows: each level is
+    1 to 5, and a method that is mandatory somewhere names the tier that sets
+    the rule. That the levels are exactly the tier's levels in
+    ``harm_model.yaml`` is a cross-file check and stays in the framework's
+    ``validate_method_registry.py``; this package does not carry the harm
+    model (``risk.AnalysisDepth`` names the tiers, but ``methods`` cannot
+    import ``risk``, which imports ``methods``).
+    """
+
+    mandatory_at_harm_levels: list[Annotated[int, Field(ge=1, le=5)]] = Field(
+        default_factory=list,
+        description="Harm levels (1-5, the harm model's scale) of a hazard "
+        "record at which the method is mandatory. Empty where it is "
+        "mandatory nowhere.",
+    )
+    harm_model_tier: str | None = Field(
+        None, min_length=1,
+        description="The harm_model.yaml analysis_depth tier that sets the "
+        "rule, e.g. full_safety_analysis. Required when "
+        "mandatory_at_harm_levels is not empty.",
+    )
+
+    @model_validator(mode="after")
+    def _mandatory_levels_name_their_tier(self) -> "DepthApplicability":
+        if self.mandatory_at_harm_levels and not self.harm_model_tier:
+            raise ValueError(
+                "harm_model_tier is required when mandatory_at_harm_levels "
+                "is not empty: a level is mandatory because of a tier"
+            )
+        return self
 
 
 class ApplicabilityProfile(AshMaticsBaseModel):
@@ -262,6 +320,29 @@ class MethodDefinition(AshMaticsBaseModel):
         description="Exemplar default-selection rules; may be empty for "
         "methods that are never defaults (e.g. demographic parity).",
     )
+    depth_applicability: DepthApplicability | None = Field(
+        None,
+        description="Where the method is mandatory, as against preferred "
+        "(default_for). Absent on every method that is not part of a family "
+        "with a depth rule. The hazard_analysis family carries it on all six "
+        "methods, with an empty list where a method is mandatory nowhere.",
+    )
+    forbidden_decisions: list[ForbiddenDecision] | None = Field(
+        None,
+        description="What applying the method never decides, whoever or "
+        "whatever applies it. A closed list; no repeats. Absent where the "
+        "method has no such statement. The hazard_analysis family carries "
+        "the same four on all six methods.",
+    )
     review: MethodReview = Field(
         ..., description="Review-cycle bookkeeping."
     )
+
+    @field_validator("forbidden_decisions")
+    @classmethod
+    def _forbidden_decisions_are_a_set(
+        cls, v: list[ForbiddenDecision] | None
+    ) -> list[ForbiddenDecision] | None:
+        if v is not None and len(set(v)) != len(v):
+            raise ValueError("forbidden_decisions must not repeat a decision")
+        return v

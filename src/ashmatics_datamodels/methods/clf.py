@@ -23,7 +23,8 @@ framework share one rule grammar instead of drifting copies.
 
 The enums (``ConditionScope``, ``EvaluationTime``, ``MethodControlAction``)
 live in ``enums.py``; this module carries the structured registry-entry
-shape for system-scope attributes.
+shape for system-scope attributes (``SystemAttribute``) and, since CLF
+v0.11.0 (ASHFORGE-828), record-scope attributes (``RecordAttribute``).
 """
 
 from typing import Literal
@@ -122,3 +123,56 @@ class SystemAttribute(AshMaticsBaseModel):
                 "registration, not instead of it"
             )
         return self
+
+
+class RecordAttribute(AshMaticsBaseModel):
+    """
+    One registered ``{{record.*}}`` condition attribute (CLF v0.11.0,
+    ``condition_scopes.record``): a feature of ONE hazard record, read when a
+    hazard analysis method is chosen for that record (SOP-RM-01 Step 5) and
+    when the choice is read again (SOP-RM-02 Step 3). A method is chosen per
+    record and never on the system's rollup, so a condition in this scope does
+    not read ``{{system.harmLevel}}``, which is the maximum over a system's
+    records.
+
+    Mirrors ``SystemAttribute`` where the two scopes share a shape. Two
+    differences, both deliberate:
+
+    - ``source`` is required and is one of two things. ``hazard_record`` is a
+      value stored on the record (``record.harmLevel``, ``record.linkTypes``).
+      ``analyst_judgement`` is a value the safety analyst judges, or an
+      assistant proposes and the analyst confirms (``record.sequenceStructure``):
+      **judged, not stored**, with no field of the hazard record behind it. The
+      source is how a consumer tells the two apart, so it cannot be left out.
+      ``SystemAttribute.source`` names an operational store and stays a
+      different closed list.
+    - There is no ``pre_registration_source``, ``skos_scheme``, ``deprecated``
+      or ``superseded_by``: a hazard record exists only after its system is
+      registered, and no record attribute is a classification or has been
+      retired. Add them when one is.
+
+    A record that has no value for an attribute resolves to the approved
+    methods unranked, never an error (the scope's ``degraded_mode``).
+    """
+
+    name: str = Field(
+        ..., pattern=r"^record\.[a-z][A-Za-z0-9]*$",
+        description="Token name as used in conditions, e.g. record.harmLevel.",
+    )
+    type: Literal["string", "number", "integer", "boolean", "array", "object"] = Field(
+        ..., description="CLF value type of the resolved attribute."
+    )
+    source: Literal["hazard_record", "analyst_judgement"] = Field(
+        ...,
+        description="Where the value comes from. ``hazard_record``: stored on "
+        "the hazard record. ``analyst_judgement``: judged by the analyst (or "
+        "proposed by an assistant and confirmed), not stored.",
+    )
+    allowed_values: list[str | int] | None = Field(
+        None,
+        description="Closed value set carried inline so validators need no "
+        "ontology runtime. For an array attribute, the legal members.",
+    )
+    note: str | None = Field(
+        None, description="Registry annotation, e.g. what the attribute drives."
+    )
