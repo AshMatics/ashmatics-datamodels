@@ -18,14 +18,22 @@ Evidence document schemas for kb_evidence_docs collection.
 Peer-reviewed papers, clinical trials, and other evidence documents
 with structured sections, figures, tables, and references.
 
+0.23.0 (ASHFORGE-866 RP-9): ``content.tables`` and ``content.figures`` also take
+the research-paper ``PaperTable`` and ``PaperFigure`` (``documents/papers.py``),
+and ``EvidenceMetadataContent.abstract_witnesses`` holds each source's abstract.
+``EvidenceMetadataContent.abstract`` has always existed (inherited from
+``MetadataContentBase``); it is the one chosen abstract.
+
 Reference: docs/Plans/DocumentDataModelSchema-Normalize-2025-11-15/
 """
 
-from datetime import date
+from datetime import date, datetime
+from enum import Enum
 from typing import Optional
 
 from pydantic import Field
 
+from ashmatics_datamodels.common.base import AshMaticsBaseModel
 from ashmatics_datamodels.documents.base import (
     CitationReference,
     ContentBase,
@@ -39,6 +47,43 @@ from ashmatics_datamodels.documents.base import (
     SectionBase,
     TableReference,
 )
+from ashmatics_datamodels.documents.papers import PaperFigure, PaperTable
+
+# =============================================================================
+# Abstract witnesses (0.23.0, ASHFORGE-866 RP-9; KB design note IN-13 §3)
+# =============================================================================
+
+
+class AbstractWitnessSource(str, Enum):
+    """Where an abstract text came from, in IN-13 decision 2's precedence order."""
+
+    JATS = "jats"  # <abstract> of the publisher XML
+    PUBMED = "pubmed"
+    EUROPEPMC = "europepmc"  # Europe PMC REST
+    CROSSREF = "crossref"  # Crossref deposited abstract
+    ARXIV = "arxiv"  # First for preprint-only works
+    DOCUMENT = "document"  # The paper's own abstract section, last
+
+
+class AbstractWitness(AshMaticsBaseModel):
+    """One source's abstract for a work, kept so a curator can compare them.
+
+    The texts live on the Mongo record (IN-13 §3.4); the comparison, the chosen
+    witness and the verdict live in the evidence row's
+    ``verification_detail.abstract_provenance``. ``excluded`` records a witness
+    that answered but was not admitted (``abstract-type=summary``), with no text.
+    """
+
+    source: AbstractWitnessSource = Field(..., description="Which source")
+    text: str | None = Field(None, description="The abstract as that source gave it")
+    sha256: str | None = Field(
+        None, pattern=r"^[0-9a-f]{64}$", description="sha256 of the text, lowercase hex"
+    )
+    words: int | None = Field(None, ge=0, description="Word count of the text")
+    retrieved_at: datetime | None = Field(None, description="When it was fetched")
+    excluded: str | None = Field(
+        None, description="Why this witness was not admitted, e.g. 'abstract-type=summary'"
+    )
 
 
 # =============================================================================
@@ -95,6 +140,14 @@ class EvidenceMetadataContent(MetadataContentBase):
         description="Pathologies studied (e.g., ['pneumonia', 'pleural_effusion'])",
     )
 
+    # Abstract witnesses (0.23.0). ``abstract`` itself is inherited from
+    # MetadataContentBase and holds the chosen text. None, not [], by default so
+    # a record written before 0.23.0 dumps without gaining the key.
+    abstract_witnesses: list[AbstractWitness] | None = Field(
+        None,
+        description="Each source's abstract text (IN-13 §3.4); provenance is on the row",
+    )
+
 
 # =============================================================================
 # Evidence-Specific Content
@@ -119,13 +172,15 @@ class EvidenceContent(ContentBase):
         },
         description="Standard academic paper sections",
     )
-    figures: list[FigureReference] = Field(
+    # The legacy reference types come first: a dict valid as both (a bare id
+    # and caption) stays the legacy type, so earlier documents dump unchanged.
+    figures: list[FigureReference | PaperFigure] = Field(  # type: ignore[assignment]
         default_factory=list,
-        description="Figures in the paper",
+        description="Figures in the paper; PaperFigure for research-paper full text",
     )
-    tables: list[TableReference] = Field(
+    tables: list[TableReference | PaperTable] = Field(  # type: ignore[assignment]
         default_factory=list,
-        description="Tables in the paper",
+        description="Tables in the paper; PaperTable for research-paper full text",
     )
     references: list[CitationReference] = Field(
         default_factory=list,

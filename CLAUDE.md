@@ -100,6 +100,9 @@ The library follows a domain-driven structure:
   - `base.py`: Base classes for all `kb_*` collections
   - `evidence.py`: Evidence/publication documents
   - `regulatory.py`: Regulatory document schemas (510k summaries)
+  - `metrics.py`: `MetricType`, `PerformanceMetric` (shared FDA and paper; page and cell reference; re-exported from `regulatory.py`)
+  - `papers.py`: research-paper `PaperTable` and `PaperFigure` (KB IN-13, RP-9)
+  - `cell_values.py`: `normalise_cell`, the typed table-cell normaliser, and `CellValue`
   - `models.py`: AI model card documents
   - `products.py`: Product profile cards
   - `manufacturers.py`: Manufacturer profile cards
