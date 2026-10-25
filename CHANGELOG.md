@@ -1,7 +1,7 @@
 ## CHANGELOG for the Common DataModels supporting Asher FORGE
 *Copyright 2026 Asher Informatics PBC All Rights Reserved*
 
-### Unreleased (next minor, 0.23.0) — ASHFORGE-866 — research-paper tables, figures and abstract witnesses (RP-9)
+### v0.23.0 (2026-10-25) — ASHFORGE-866 — research-paper tables, figures and abstract witnesses (RP-9)
 
 The datamodels row of the `research-paper` ingestion profile (KB design note `IN-13-research-paper-profile-design-20261018.md`, row RP-9; §1, §3.4, §4, §5, decisions 6 and 7). **Backwards compatible: nothing renamed, removed or tightened.** Every addition is a new model, a new optional field defaulting to `None`, or a widened union, and the tests check that a pre-0.23.0 `PerformanceMetric`, evidence `metadata_content` and evidence `content` validate and dump unchanged.
 
