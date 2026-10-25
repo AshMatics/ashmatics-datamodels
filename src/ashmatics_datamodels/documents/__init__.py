@@ -55,8 +55,19 @@ from ashmatics_datamodels.documents.base import (
     TableReference,
 )
 
+# Typed table-cell normaliser (0.23.0)
+from ashmatics_datamodels.documents.cell_values import (
+    CellValue,
+    CellValueKind,
+    ColumnKind,
+    IntervalKind,
+    normalise_cell,
+)
+
 # Evidence documents
 from ashmatics_datamodels.documents.evidence import (
+    AbstractWitness,
+    AbstractWitnessSource,
     EvidenceContent,
     EvidenceDocument,
     EvidenceDocumentCreate,
@@ -106,6 +117,12 @@ from ashmatics_datamodels.documents.manufacturers import (
     ProductRef,
 )
 
+# Shared performance metrics (0.23.0: moved out of regulatory, re-exported there)
+from ashmatics_datamodels.documents.metrics import (
+    MetricSourceKind,
+    TableCellRef,
+)
+
 # AI Model cards
 from ashmatics_datamodels.documents.models import (
     DataSplits,
@@ -118,6 +135,25 @@ from ashmatics_datamodels.documents.models import (
     ModelCardSummary,
     OutputSpecs,
     PerformanceMetrics,
+)
+
+# Research-paper tables and figures (0.23.0)
+from ashmatics_datamodels.documents.papers import (
+    BoundingBox,
+    CoordOrigin,
+    FigureImage,
+    GeneratedDescription,
+    GeneratedDescriptionReason,
+    PaperFigure,
+    PaperFigureKind,
+    PaperFootnote,
+    PaperParser,
+    PaperParserSource,
+    PaperTable,
+    PaperTableCategory,
+    PaperTableCell,
+    PaperTableColumn,
+    PaperTableQualityCheck,
 )
 
 # Product cards
@@ -189,6 +225,30 @@ __all__ = [
     "EvidenceDocument",
     "EvidenceDocumentCreate",
     "EvidenceSummary",
+    "AbstractWitness",
+    "AbstractWitnessSource",
+    # Research-paper tables and figures (0.23.0)
+    "PaperTable",
+    "PaperTableCell",
+    "PaperTableColumn",
+    "PaperTableCategory",
+    "PaperTableQualityCheck",
+    "PaperFootnote",
+    "PaperFigure",
+    "PaperFigureKind",
+    "FigureImage",
+    "GeneratedDescription",
+    "GeneratedDescriptionReason",
+    "PaperParser",
+    "PaperParserSource",
+    "BoundingBox",
+    "CoordOrigin",
+    # Typed cell normaliser (0.23.0)
+    "normalise_cell",
+    "CellValue",
+    "CellValueKind",
+    "ColumnKind",
+    "IntervalKind",
     # Regulatory
     "RegulatoryMetadataContent",
     "RegulatoryContent",
@@ -202,6 +262,8 @@ __all__ = [
     "StudyType",
     "MetricType",
     "PerformanceMetric",
+    "MetricSourceKind",
+    "TableCellRef",
     "TestDataset",
     "ValidationStudy",
     # Phase 2D Training Data Models

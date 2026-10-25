@@ -10,7 +10,7 @@ This is **ashmatics-core-datamodels**, a canonical Pydantic data models library 
 - ashmatics-knowledgebase-tools (ingestion pipelines)
 - AI Watch applications
 
-Version: 0.22.0 as of 2026-10-11 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
+Version: 0.23.0 as of 2026-10-25 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
 
 ## Development Commands
 
@@ -100,6 +100,9 @@ The library follows a domain-driven structure:
   - `base.py`: Base classes for all `kb_*` collections
   - `evidence.py`: Evidence/publication documents
   - `regulatory.py`: Regulatory document schemas (510k summaries)
+  - `metrics.py`: `MetricType`, `PerformanceMetric` (shared FDA and paper; page and cell reference; re-exported from `regulatory.py`)
+  - `papers.py`: research-paper `PaperTable` and `PaperFigure` (KB IN-13, RP-9)
+  - `cell_values.py`: `normalise_cell`, the typed table-cell normaliser, and `CellValue`
   - `models.py`: AI model card documents
   - `products.py`: Product profile cards
   - `manufacturers.py`: Manufacturer profile cards

@@ -22,6 +22,8 @@ predicates, and performance testing.
 Phase 2E (2025-11-25): Added comprehensive performance data models:
 - StudyType, MetricType enums for standardized classification
 - PerformanceMetric for individual metrics with statistical context
+  (both MetricType and PerformanceMetric live in documents/metrics.py since
+  0.23.0 and are re-exported here)
 - TestDataset for validation dataset characteristics
 - ValidationStudy for study design and methodology
 - Enhanced PerformanceTestResults with structured validation data
@@ -50,6 +52,14 @@ from ashmatics_datamodels.documents.base import (
     SectionBase,
 )
 
+# MetricType and PerformanceMetric moved to documents/metrics.py (0.23.0) so FDA
+# and paper extraction share one metric record. Re-exported here so every
+# existing ``from ashmatics_datamodels.documents.regulatory import ...`` works.
+from ashmatics_datamodels.documents.metrics import (  # noqa: F401
+    MetricType,
+    PerformanceMetric,
+)
+
 
 # =============================================================================
 # Phase 2E Enumerations (Performance Data Extraction)
@@ -71,31 +81,6 @@ class StudyType(str, Enum):
     RETROSPECTIVE = "retrospective"  # Retrospective chart review/data analysis
     PROSPECTIVE = "prospective"  # Prospective data collection study
     UNKNOWN = "unknown"  # Cannot determine study type
-
-
-class MetricType(str, Enum):
-    """
-    Type of performance metric (REQ-3.1).
-
-    Standardized metric types for querying and analysis across devices.
-    """
-
-    SENSITIVITY = "sensitivity"  # True positive rate
-    SPECIFICITY = "specificity"  # True negative rate
-    AUC = "auc"  # Area under ROC curve
-    DICE = "dice"  # DICE coefficient (segmentation overlap)
-    ACCURACY = "accuracy"  # Overall accuracy
-    PPV = "ppv"  # Positive predictive value
-    NPV = "npv"  # Negative predictive value
-    F1_SCORE = "f1_score"  # F1 score (harmonic mean of precision/recall)
-    PRECISION = "precision"  # Precision (same as PPV)
-    RECALL = "recall"  # Recall (same as sensitivity)
-    HAUSDORFF_DISTANCE = "hausdorff_distance"  # Hausdorff distance (segmentation)
-    TIME_TO_DETECTION = "time_to_detection"  # Time to detect finding
-    TIME_TO_NOTIFICATION = "time_to_notification"  # Time to notify clinician
-    DETECTION_RATE = "detection_rate"  # Detection rate (e.g., adenoma, fracture)
-    FALSE_POSITIVE_RATE = "false_positive_rate"  # False positive rate
-    OTHER = "other"  # Other metric types not in standard list
 
 
 # =============================================================================
@@ -223,87 +208,6 @@ class DatasetCharacteristics(AshMaticsBaseModel):
 # =============================================================================
 # Phase 2E Performance Data Models (REQ-3)
 # =============================================================================
-
-
-class PerformanceMetric(AshMaticsBaseModel):
-    """
-    Individual performance metric with statistical context and stratification.
-
-    Addresses REQ-3.1 (Performance Metrics Extraction) from Phase 2E design plan.
-    Captures quantitative performance metrics with confidence intervals, p-values,
-    and stratification dimensions for comparative effectiveness analysis.
-
-    Example:
-        >>> metric = PerformanceMetric(
-        ...     metric_name="sensitivity",
-        ...     metric_type=MetricType.SENSITIVITY,
-        ...     value=0.906,
-        ...     ci_lower=0.822,
-        ...     ci_upper=0.959,
-        ...     sample_size=184,
-        ...     stratification={"study": "pivotal", "site": "multi_site"},
-        ...     source_table="table_18"
-        ... )
-    """
-
-    metric_name: str = Field(
-        ...,
-        description="Metric name as appears in document (e.g., 'sensitivity', 'DICE', 'AUC')",
-    )
-    metric_type: Optional[MetricType] = Field(
-        None,
-        description="Standardized metric type for querying across devices",
-    )
-    value: float = Field(
-        ...,
-        description="Metric value (proportion 0-1 for percentages, raw value otherwise)",
-    )
-    unit: Optional[str] = Field(
-        None,
-        description="Unit if applicable (e.g., 'seconds', 'mm', 'minutes')",
-    )
-
-    # Statistical measures (REQ-3.3)
-    ci_lower: Optional[float] = Field(
-        None,
-        description="95% confidence interval lower bound",
-    )
-    ci_upper: Optional[float] = Field(
-        None,
-        description="95% confidence interval upper bound",
-    )
-    p_value: Optional[float] = Field(
-        None,
-        ge=0.0,
-        le=1.0,
-        description="p-value for statistical testing",
-    )
-    standard_error: Optional[float] = Field(
-        None,
-        ge=0.0,
-        description="Standard error of metric",
-    )
-    sample_size: Optional[int] = Field(
-        None,
-        ge=0,
-        description="Sample size (N) for this metric calculation",
-    )
-
-    # Stratification (REQ-3.4)
-    stratification: Optional[dict[str, str]] = Field(
-        None,
-        description="Stratification dimensions (e.g., {'gender': 'female', 'age_group': '50-70', 'study': 'pivotal'})",
-    )
-
-    # Source attribution (REQ-8.1)
-    source_table: Optional[str] = Field(
-        None,
-        description="Source table ID (e.g., 'table_18')",
-    )
-    source_section: Optional[str] = Field(
-        None,
-        description="Source section if extracted from narrative text",
-    )
 
 
 class TestDataset(AshMaticsBaseModel):
