@@ -264,7 +264,7 @@ def _plain_unit(hint: str) -> str | None:
     candidate = candidate.strip()
     if candidate.casefold() in _KNOWN_UNITS:
         return candidate
-    if _UNIT_SYMBOL.fullmatch(candidate) and re.search(r"[/^²³°µ0-9]", candidate):
+    if _UNIT_SYMBOL.fullmatch(candidate) and re.search(r"[/^²³°µ]", candidate):
         return candidate
     return None
 
