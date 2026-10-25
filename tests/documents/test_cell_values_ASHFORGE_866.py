@@ -275,3 +275,33 @@ class TestCellValueModel:
         # A §4.4 check, not a refusal: the table builder raises the finding.
         CellValue(kind="estimate_interval", value=2.0, low=0.1, high=0.2)
         CellValue(kind="percent", value=250.0, unit="%")
+
+
+class TestDuoReviewFixes:
+    """MR !13 review: an impossible CI level never raises; a header is not a unit."""
+
+    @pytest.mark.parametrize(
+        "cell", ["0.91 (100% CI: 0.85-0.95)", "0.91 (0% CI 0.85-0.95)"]
+    )
+    def test_out_of_range_ci_level_is_dropped(self, cell):
+        out = normalise_cell(cell)
+        assert out.kind == "estimate_interval"
+        assert out.value == 0.91 and out.low == 0.85 and out.high == 0.95
+        assert out.ci_level is None
+
+    @pytest.mark.parametrize(
+        ("hint", "unit"),
+        [
+            ("ms", "ms"),
+            ("Age (years)", "years"),
+            ("Weight, kg", "kg"),
+            ("mg/dL", "mg/dL"),
+            ("Specificity", None),
+            ("Age", None),
+            ("Positive predictive value (PPV)", None),
+        ],
+    )
+    def test_plain_hint_unit(self, hint, unit):
+        out = normalise_cell("12", hint)
+        assert out.kind == "number"
+        assert out.unit == unit

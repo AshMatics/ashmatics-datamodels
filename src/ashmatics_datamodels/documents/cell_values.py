@@ -239,6 +239,36 @@ _KIND_HINTS = {
 }
 
 
+# Units a bare hint may name. A header word that is not a unit ("Specificity",
+# "Age") is not one, so a hint outside this set and without a unit symbol gives
+# no unit rather than a wrong one.
+_KNOWN_UNITS = frozenset(
+    """s sec ms min h hr hrs hour hours d day days wk week weeks mo month months
+    y yr yrs year years nm um µm mm cm m km mg g kg ml l dl mmhg bpm gy mgy msv
+    hu kv kvp mas px pixels voxels""".split()
+)
+_UNIT_SYMBOL = re.compile(r"^[^\s]{1,12}$")  # one token: mg/dL, mm², m^2, °C
+
+
+def _plain_unit(hint: str) -> str | None:
+    """The unit a non-keyword hint names, or ``None`` when it names none.
+
+    ``"ms"`` and ``"Age (years)"`` give ``ms`` and ``years``; ``"Weight, kg"``
+    gives ``kg``; ``"Specificity"`` and ``"Positive predictive value (PPV)"``
+    give ``None``. A candidate is the trailing parenthetical, else the text after
+    the last comma, else the whole hint.
+    """
+    h = " ".join(hint.split())
+    m = re.search(r"\(([^()]+)\)\s*$", h)
+    candidate = m.group(1) if m else h.rsplit(",", 1)[-1]
+    candidate = candidate.strip()
+    if candidate.casefold() in _KNOWN_UNITS:
+        return candidate
+    if _UNIT_SYMBOL.fullmatch(candidate) and re.search(r"[/^²³°µ0-9]", candidate):
+        return candidate
+    return None
+
+
 def _classify_hint(hint: str | None) -> tuple[_Hint | None, bool]:
     """Classify a hint; the flag says the hint puts the values in percent.
 
@@ -351,7 +381,9 @@ def normalise_cell(text: str | None, hint: str | None = None) -> CellValue:
         hint: The column's unit as printed in its header (``"%"``, ``"n (%)"``,
             ``"mean ± SD"``, ``"median [IQR]"``, ``"95% CI"``, ``"P value"``,
             ``"ms"``), or a :class:`ColumnKind` value. It resolves the forms that
-            are ambiguous on their own and supplies the unit of a bare number.
+            are ambiguous on their own and supplies the unit of a bare number. A
+            header with no keyword gives a unit only when it names one
+            (``"Age (years)"``: ``years``; ``"Specificity"``: none).
 
     Returns:
         A ``CellValue``. Text that matches no form, or matches one only a hint
@@ -359,7 +391,7 @@ def normalise_cell(text: str | None, hint: str | None = None) -> CellValue:
     """
     rest, marks = _strip_marks(" ".join((text or "").split()))
     hint_kind, hint_percent = _classify_hint(hint)
-    plain_unit = " ".join(hint.split()) if hint_kind == _Hint.PLAIN and hint else None
+    plain_unit = _plain_unit(hint) if hint_kind == _Hint.PLAIN and hint else None
     hinted_unit = "%" if hint_percent else plain_unit
 
     def make(kind: CellValueKind, **fields: object) -> CellValue:
@@ -419,7 +451,9 @@ def normalise_cell(text: str | None, hint: str | None = None) -> CellValue:
             low=_num(m.group(4)),
             high=_num(m.group(7)),
             interval=_interval_for(hint_kind, level),
-            ci_level=float(level) if level else None,
+            # CellValue bounds ci_level to (0, 100); an impossible printed level is
+            # dropped, never raised, so one cell cannot sink a whole table.
+            ci_level=float(level) if level and 0 < float(level) < 100 else None,
             unit="%" if has_pct else hinted_unit,
         )
 
