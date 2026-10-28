@@ -66,7 +66,7 @@ class IntegratedModelRef(AshMaticsBaseModel):
 
     model_id: Optional[str] = Field(
         None,
-        description="Reference to kb_aimodel_cards document",
+        description="Reference to the kb_aisystem_card document whose model parts describe this model",
     )
     model_name: str = Field(
         ...,

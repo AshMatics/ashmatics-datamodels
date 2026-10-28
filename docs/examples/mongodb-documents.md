@@ -133,48 +133,56 @@ doc.content.sections["2_device_description"] = SectionBase(
 )
 ```
 
-## Creating a Model Card
+## Creating an AI System Card
 
 ```python
 from ashmatics_datamodels.documents import (
-    ModelCardDocument,
-    ModelCardMetadataContent,
-    PerformanceMetrics,
+    ModelPart,
+    MonitoringMetric,
+    SystemCardContent,
+    SystemCardDocument,
+    SystemCardMetadataContent,
+    SystemDocumentSection,
 )
 
-doc = ModelCardDocument(
-    _id="model-chestxray-v2",
-    metadata_content=ModelCardMetadataContent(
-        document_type=DocumentType.AIMODEL_CARD,
-        content_type=ContentType.MODEL_CARD_V1,
-        title="ChestXray-AI v2.1.0 Model Card",
-        model_name="ChestXray-AI",
-        model_version="2.1.0",
-        developer="Stanford AI Lab",
-        release_date=date(2024, 9, 1),
-        clinical_domain="radiology",
-        anatomical_region="chest",
-        tags=["pneumonia", "chest-xray", "classification"],
+doc = SystemCardDocument(
+    metadata_content=SystemCardMetadataContent(
+        title="Chart Review Agent (Clinical Summaries) Model Card",
+        system_name="Oracle Health Clinical AI Agent, Chart Review Agent (Clinical Summaries)",
+        system_version="26.09",
+        release_date="2026-09",
+        model_type="Summarization",
+        developer="Oracle Health",
+        third_party_information="OpenAI Platform",
+    ),
+    content=SystemCardContent(
+        sections={
+            "external_validation": SystemDocumentSection(
+                title="External Validation",
+                order=1,
+                text="Not available. No external validation was conducted.",
+                stated_absent=True,
+            ),
+        },
+        monitoring=[
+            MonitoringMetric(
+                category="performance",
+                metric="Precision",
+                automated_or_manual="Manual",
+                frequency="Monthly",
+            ),
+        ],
+        model_parts=[ModelPart(name="GPT-5.4", role="large language model", third_party=True)],
     ),
 )
-
-# Add performance metrics
-doc.content.performance = PerformanceMetrics(
-    accuracy=0.952,
-    sensitivity=0.918,
-    specificity=0.973,
-    auc_roc=0.945,
-    f1_score=0.944,
-    validation_dataset="external_test_set_2024",
-)
-
-# Add training information section
-doc.content.sections["training"] = SectionBase(
-    title="Training Details",
-    order=1,
-    text="Trained on 100,000 chest X-rays from 50 hospitals...",
-)
 ```
+
+A vendor's HTI-1 source-attribute card is a system card even when the vendor titles it a model
+card. The models inside are `ModelPart` entries, zero or more; there is no model-card document
+kind. Section keys are `SYSTEM_CARD_SECTION_NAMES`; any other key is refused.
+
+`IfuDocument` (`kb_ifu_doc`) is the same shape for instructions for use: `IfuMetadataContent`
+requires `catalogue_number` and `product_name`, and section keys are `IFU_SECTION_NAMES`.
 
 ## Inserting into MongoDB
 
