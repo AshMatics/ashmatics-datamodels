@@ -1,7 +1,7 @@
 ## CHANGELOG for the Common DataModels supporting Asher FORGE
 *Copyright 2026 Asher Informatics PBC All Rights Reserved*
 
-### [Unreleased] (planned v0.24.0, minor) — ASHFORGE-827 — vendor system documents; the AI system card replaces the model card (SC-9n)
+### v0.24.0 (2026-10-28) — ASHFORGE-827 — vendor system documents; the AI system card replaces the model card (SC-9n)
 
 The datamodels row of SC-9n task B in the Knowledgebase's `DESIGN-Function-Concepts-And-Summary-Enrichment-20261027` (sections 7.2, 7.5; JF Kalafut's decisions of 2026-10-28, section 7.10). `pyproject.toml` and `__version__` say 0.24.0; not tagged. **Breaking for anyone who imports the model-card names**, which nothing outside this repo does (checked 2026-10-28 across the KB, coreapp, agentic, ashmatics-tools and the framework). **Needs ashmatics-ontology 2.16.0 for its guard** (`dk-ifu-doc`, `dk-aisystem-card`; branch `sc9a-function-schemes`, not yet on main), so the ontology merges and tags first: against ontology main the ADR-002 guard fails on `kb_aisystem_card` and `kb_ifu_doc`.
 
