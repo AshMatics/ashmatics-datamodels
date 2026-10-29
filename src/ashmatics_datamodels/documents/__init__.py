@@ -23,7 +23,8 @@ All kb_* MongoDB collections follow this pattern:
 This module provides Pydantic models for:
 - kb_evidence_docs: Peer-reviewed papers and clinical evidence
 - kb_regulatory_docs: FDA 510(k), PMA, De Novo summaries
-- kb_aimodel_cards: AI model cards with architecture and performance
+- kb_aisystem_card: AI system cards (HTI-1 source attributes), with model parts
+- kb_ifu_doc: instructions for use
 - kb_product_cards: Product profiles with regulatory status
 - kb_manufacturer_cards: Company profiles and portfolios
 - kb_use_cases: Clinical use cases with applicable products
@@ -123,19 +124,6 @@ from ashmatics_datamodels.documents.metrics import (
     TableCellRef,
 )
 
-# AI Model cards
-from ashmatics_datamodels.documents.models import (
-    DataSplits,
-    ExternalResources,
-    InputSpecs,
-    ModelCardContent,
-    ModelCardDocument,
-    ModelCardDocumentCreate,
-    ModelCardMetadataContent,
-    ModelCardSummary,
-    OutputSpecs,
-    PerformanceMetrics,
-)
 
 # Research-paper tables and figures (0.23.0)
 from ashmatics_datamodels.documents.papers import (
@@ -190,6 +178,30 @@ from ashmatics_datamodels.documents.regulatory import (
     TestDataset,
     TrainingDataCharacteristics,
     ValidationStudy,
+)
+
+# Vendor system documents (SC-9n): IFUs and AI system cards
+from ashmatics_datamodels.documents.system_documents import (
+    IFU_SECTION_NAMES,
+    SYSTEM_CARD_SECTION_NAMES,
+    DataSplits,
+    ExternalResources,
+    IfuContent,
+    IfuDocument,
+    IfuDocumentCreate,
+    IfuMetadataContent,
+    InputSpecs,
+    ModelPart,
+    ModelTrainingData,
+    MonitoringCategory,
+    MonitoringMetric,
+    OutputSpecs,
+    PerformanceMetrics,
+    SystemCardContent,
+    SystemCardDocument,
+    SystemCardDocumentCreate,
+    SystemCardMetadataContent,
+    SystemDocumentSection,
 )
 
 # Use cases
@@ -270,12 +282,22 @@ __all__ = [
     "TrainingDataCharacteristics",
     "DatasetCharacteristics",
     "PatientDemographics",
-    # Model Cards
-    "ModelCardMetadataContent",
-    "ModelCardContent",
-    "ModelCardDocument",
-    "ModelCardDocumentCreate",
-    "ModelCardSummary",
+    # Vendor system documents (SC-9n): IFUs and AI system cards
+    "IFU_SECTION_NAMES",
+    "SYSTEM_CARD_SECTION_NAMES",
+    "SystemDocumentSection",
+    "IfuMetadataContent",
+    "IfuContent",
+    "IfuDocument",
+    "IfuDocumentCreate",
+    "MonitoringCategory",
+    "MonitoringMetric",
+    "ModelPart",
+    "ModelTrainingData",
+    "SystemCardMetadataContent",
+    "SystemCardContent",
+    "SystemCardDocument",
+    "SystemCardDocumentCreate",
     "InputSpecs",
     "OutputSpecs",
     "DataSplits",

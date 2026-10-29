@@ -189,3 +189,46 @@ def test_enum_values_are_scheme_concepts(graph):
                 f"(legal values: {sorted(legal)})"
             )
     assert checked, "no scheme-bound enum values were checked"
+
+
+def test_document_kind_scheme_is_covered_by_document_type(graph):
+    """The reverse check for the KIND axis: no live document kind lacks an enum value.
+
+    Every DocumentKindScheme concept that is not ``owl:deprecated`` must be a
+    ``DocumentType`` value. A deprecated concept may have left the enum (0.24.0
+    removed ``kb_aimodel_card``; the ontology keeps ``ash:dk-aimodel-card``
+    deprecated), and then it must name its replacement with
+    ``dcterms:isReplacedBy``, a concept whose notation is in the enum, so a stored
+    old token can be mapped rather than stranded.
+    """
+    from rdflib.namespace import DCTERMS, OWL
+
+    from ashmatics_datamodels.documents.base import DocumentType
+
+    scheme = _expand("ash:DocumentKindScheme")
+    enum_values = {t.value for t in DocumentType}
+    concepts = set(graph.subjects(SKOS.inScheme, scheme)) | set(
+        graph.subjects(RDF.type, scheme)
+    )
+    assert concepts, "DocumentKindScheme has no concepts"
+    for concept in concepts:
+        notations = {str(n) for n in graph.objects(concept, SKOS.notation)}
+        assert len(notations) == 1, f"{concept}: expected one notation, got {notations}"
+        (notation,) = notations
+        deprecated = any(v.toPython() is True for v in graph.objects(concept, OWL.deprecated))
+        if notation in enum_values:
+            continue
+        assert deprecated, (
+            f"{concept} ({notation!r}) is a live DocumentKindScheme concept with no "
+            f"DocumentType value"
+        )
+        replacements = list(graph.objects(concept, DCTERMS.isReplacedBy))
+        assert replacements, (
+            f"{concept} ({notation!r}) left DocumentType but names no "
+            f"dcterms:isReplacedBy"
+        )
+        for replacement in replacements:
+            replaced_by = {str(n) for n in graph.objects(replacement, SKOS.notation)}
+            assert replaced_by & enum_values, (
+                f"{concept}: replacement {replacement} has no DocumentType value"
+            )

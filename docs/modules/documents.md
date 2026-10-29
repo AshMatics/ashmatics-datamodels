@@ -213,46 +213,59 @@ doc.content.predicate_device = PredicateDeviceInfo(
 - Device class and product code
 - Predicate device information
 
-### ModelCardDocument
+### SystemCardDocument and IfuDocument
 
-AI model cards (`kb_aimodel_card`).
+AI system cards (`kb_aisystem_card`) and instructions for use (`kb_ifu_doc`), vendor system
+documents (0.24.0; they replaced `ModelCardDocument` and `kb_aimodel_card`).
 
 ```python
 from ashmatics_datamodels.documents import (
-    ModelCardDocument,
-    ModelCardMetadataContent,
-    PerformanceMetrics,
+    ModelPart,
+    MonitoringMetric,
+    SystemCardContent,
+    SystemCardDocument,
+    SystemCardMetadataContent,
+    SystemDocumentSection,
 )
 
-doc = ModelCardDocument(
-    _id="model-001",
-    metadata_content=ModelCardMetadataContent(
-        document_type=DocumentType.AIMODEL_CARD,
-        content_type=ContentType.MODEL_CARD_V1,
-        title="ChestXray-AI v2.1 Model Card",
-        model_name="ChestXray-AI",
-        model_version="2.1.0",
-        developer="Stanford AI Lab",
-        clinical_domain="radiology",
+doc = SystemCardDocument(
+    metadata_content=SystemCardMetadataContent(
+        title="Chart Review Agent (Clinical Summaries) Model Card",
+        system_name="Oracle Health Clinical AI Agent, Chart Review Agent (Clinical Summaries)",
+        system_version="26.09",
+        release_date="2026-09",
+        model_type="Summarization",
+        developer="Oracle Health",
+        third_party_information="OpenAI Platform",
     ),
-)
-
-# Add performance metrics
-doc.content.performance = PerformanceMetrics(
-    accuracy=0.95,
-    sensitivity=0.92,
-    specificity=0.97,
-    auc_roc=0.94,
-    validation_dataset="external_test_set",
+    content=SystemCardContent(
+        sections={
+            "external_validation": SystemDocumentSection(
+                title="External Validation",
+                order=1,
+                text="Not available. No external validation was conducted.",
+                stated_absent=True,
+            ),
+        },
+        monitoring=[
+            MonitoringMetric(
+                category="performance",
+                metric="Precision",
+                automated_or_manual="Manual",
+                frequency="Monthly",
+            ),
+        ],
+        model_parts=[ModelPart(name="GPT-5.4", role="large language model", third_party=True)],
+    ),
 )
 ```
 
-**Model card-specific fields:**
-- Model name and version
-- Developer and release date
-- Training details
-- Performance metrics
-- Intended use and limitations
+A vendor's HTI-1 source-attribute card is a system card even when the vendor titles it a model
+card. The models inside are `ModelPart` entries, zero or more; there is no model-card document
+kind. Section keys are `SYSTEM_CARD_SECTION_NAMES`; any other key is refused.
+
+`IfuDocument` (`kb_ifu_doc`) is the same shape for instructions for use: `IfuMetadataContent`
+requires `catalogue_number` and `product_name`, and section keys are `IFU_SECTION_NAMES`.
 
 ### ProductCardDocument
 

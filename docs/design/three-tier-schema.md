@@ -146,7 +146,8 @@ MetadataContentBase(
 Extended by type-specific metadata:
 - `EvidenceMetadataContent` - authors, journal, DOI
 - `RegulatoryMetadataContent` - K number, device class
-- `ModelCardMetadataContent` - model name, version
+- `SystemCardMetadataContent` - system name, version, release date (HTI-1 Model Summary)
+- `IfuMetadataContent` - catalogue number, product and manufacturer as written
 - etc.
 
 ### Tier 3: content
@@ -168,7 +169,7 @@ ContentBase(
 Extended by type-specific content:
 - `EvidenceContent` - study design, sample size
 - `RegulatoryContent` - predicate device
-- `ModelCardContent` - performance metrics
+- `SystemCardContent` - monitoring rows, model parts
 - etc.
 
 ## Example Document

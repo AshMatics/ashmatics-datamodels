@@ -27,9 +27,6 @@ from ashmatics_datamodels.documents import (
     ManufacturerCardDocument,
     ManufacturerCardMetadataContent,
     MetadataObjectBase,
-    ModelCardDocument,
-    ModelCardMetadataContent,
-    PerformanceMetrics,
     PredicateDeviceInfo,
     ProductCardDocument,
     ProductCardMetadataContent,
@@ -179,46 +176,6 @@ class TestRegulatoryDocument:
         )
         assert predicate.k_number == "K190123"
         assert predicate.manufacturer == "Competing AI Inc"
-
-
-class TestModelCardDocument:
-    """Tests for kb_aimodel_cards schemas."""
-
-    def test_model_card_creation(self):
-        """Test creating an AI model card."""
-        doc = ModelCardDocument(
-            _id="test-model-123",
-            metadata_content=ModelCardMetadataContent(
-                document_type=DocumentType.AIMODEL_CARD,
-                content_type=ContentType.MODEL_CARD_V1,
-                title="ChestXray-AI Model Card",
-                model_name="ChestXray-AI",
-                model_version="2.1.0",
-                developer="Stanford AI Lab",
-                clinical_domain="radiology",
-                anatomical_region="chest",
-            ),
-        )
-        assert doc.metadata_content.model_name == "ChestXray-AI"
-        assert doc.metadata_content.model_version == "2.1.0"
-        assert doc.metadata_content.developer == "Stanford AI Lab"
-
-    def test_performance_metrics(self):
-        """Test performance metrics validation."""
-        metrics = PerformanceMetrics(
-            accuracy=0.95,
-            sensitivity=0.92,
-            specificity=0.97,
-            auc_roc=0.94,
-            validation_dataset="test_split",
-        )
-        assert metrics.accuracy == 0.95
-        assert metrics.auc_roc == 0.94
-
-    def test_invalid_metrics_range(self):
-        """Test that metrics outside 0-1 range are rejected."""
-        with pytest.raises(ValueError):
-            PerformanceMetrics(accuracy=1.5)  # > 1.0 should fail
 
 
 class TestProductCardDocument:

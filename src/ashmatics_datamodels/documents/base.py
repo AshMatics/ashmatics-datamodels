@@ -49,8 +49,13 @@ class DocumentType(str, Enum):
     """
 
     EVIDENCE_DOC = "kb_evidence_doc"
-    AIMODEL_CARD = "kb_aimodel_card"
     REGULATORY_DOC = "kb_regulatory_doc"
+    # Vendor system documents (ASHFORGE-827, SC-9n; ontology 2.16.0). An AI system
+    # card replaced the model card (kb_aimodel_card, removed in 0.24.0; the ontology
+    # keeps ash:dk-aimodel-card deprecated): a vendor's card describes the whole
+    # system, holding zero or more model parts.
+    AISYSTEM_CARD = "kb_aisystem_card"
+    IFU_DOC = "kb_ifu_doc"
     PRODUCT_CARD = "kb_product_card"
     MANUFACTURER_CARD = "kb_manufacturer_card"
 
@@ -131,8 +136,9 @@ class ContentType(str, Enum):
     PMA_SUMMARY = "pma_summary"
     DE_NOVO_SUMMARY = "de_novo_summary"
 
-    # Model card types
-    MODEL_CARD_V1 = "model_card_v1"
+    # System document types (SC-9n)
+    SYSTEM_CARD_HTI1 = "system_card_hti1"  # ONC HTI-1 DSI source attributes
+    EIFU = "eifu"  # electronic instructions for use
 
     # Profile types
     PRODUCT_PROFILE = "product_profile"
