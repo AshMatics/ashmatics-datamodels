@@ -267,6 +267,32 @@ kind. Section keys are `SYSTEM_CARD_SECTION_NAMES`; any other key is refused.
 `IfuDocument` (`kb_ifu_doc`) is the same shape for instructions for use: `IfuMetadataContent`
 requires `catalogue_number` and `product_name`, and section keys are `IFU_SECTION_NAMES`.
 
+**Where it came from (0.25.0, all optional).** A section's `metadata` is a `SourceLocation`:
+`source_lines`, the first and last line in a text source (1-based, inclusive, counted in the
+file as uploaded), and `pages`, the 1-based pages of a PDF. A table (`SystemDocumentTable`)
+keeps its free-form `metadata` dict; only its `source_lines` and `pages` keys are checked, by
+the same rules. `metadata_content.source_capture` is a `SourceCapture`: where and when a
+collector took the source.
+
+```python
+from ashmatics_datamodels.documents import SourceCapture, SystemDocumentSection
+
+section = SystemDocumentSection(
+    title="Intended Use", order=3, text="...", metadata={"source_lines": [12, 20]}
+)
+capture = SourceCapture(
+    system="confluence",
+    url="https://wiki.cerner.com/display/ModelCardsHP/...",
+    space="ModelCardsHP",
+    page_id="3508873444",
+    page_version=15,
+    page_last_modified="2026-08-26T19:20:58.000Z",
+    captured_at="2026-11-01T01:10:46+00:00",
+    collector="forge-collect-oracle/0.1.0",
+    content_sha256="c646874ba659200a7846e115aa23699c2fea8558b4b28ef77866a2ebb014a945",
+)
+```
+
 ### ProductCardDocument
 
 Product profiles (`kb_product_card`).
