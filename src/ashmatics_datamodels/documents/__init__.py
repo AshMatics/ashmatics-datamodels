@@ -124,7 +124,6 @@ from ashmatics_datamodels.documents.metrics import (
     TableCellRef,
 )
 
-
 # Research-paper tables and figures (0.23.0)
 from ashmatics_datamodels.documents.papers import (
     BoundingBox,
@@ -183,6 +182,7 @@ from ashmatics_datamodels.documents.regulatory import (
 # Vendor system documents (SC-9n): IFUs and AI system cards
 from ashmatics_datamodels.documents.system_documents import (
     IFU_SECTION_NAMES,
+    SOURCE_LOCATION_KEYS,
     SYSTEM_CARD_SECTION_NAMES,
     DataSplits,
     ExternalResources,
@@ -197,11 +197,14 @@ from ashmatics_datamodels.documents.system_documents import (
     MonitoringMetric,
     OutputSpecs,
     PerformanceMetrics,
+    SourceCapture,
+    SourceLocation,
     SystemCardContent,
     SystemCardDocument,
     SystemCardDocumentCreate,
     SystemCardMetadataContent,
     SystemDocumentSection,
+    SystemDocumentTable,
 )
 
 # Use cases
@@ -286,6 +289,10 @@ __all__ = [
     "IFU_SECTION_NAMES",
     "SYSTEM_CARD_SECTION_NAMES",
     "SystemDocumentSection",
+    "SystemDocumentTable",
+    "SourceLocation",
+    "SOURCE_LOCATION_KEYS",
+    "SourceCapture",
     "IfuMetadataContent",
     "IfuContent",
     "IfuDocument",

@@ -33,13 +33,20 @@ Section text is verbatim. A section the document says is absent ("No cautions
 exist ...", "Not available. ...") is kept with ``stated_absent=True``; a section
 the document does not have is left out. Section keys are the stable names in
 ``IFU_SECTION_NAMES`` and ``SYSTEM_CARD_SECTION_NAMES``; any other key is refused.
+
+Where each part came from (0.25.0, optional): a section's ``metadata`` and a table's
+``metadata`` may say which lines of a text source (``source_lines``, 1-based,
+inclusive) or which pages of a PDF (``pages``) hold it, and ``metadata_content``
+may carry ``source_capture``, where and when a collector took the source (a
+Confluence page: its id, version and last change, the capture time, the collector
+and the sha256 of what it wrote). A 0.24.0 document validates unchanged.
 """
 
 from datetime import datetime
 from enum import Enum
 from typing import Annotated, Any
 
-from pydantic import Field, field_validator
+from pydantic import BeforeValidator, Field, field_validator, model_validator
 
 from ashmatics_datamodels.common.base import AshMaticsBaseModel
 from ashmatics_datamodels.documents.base import (
@@ -50,6 +57,7 @@ from ashmatics_datamodels.documents.base import (
     MetadataObjectBase,
     MongoDocumentBase,
     SectionBase,
+    TableReference,
 )
 
 # A release or issue month as the KB stores it: YYYY-MM, or YYYY-MM-DD when the
@@ -121,6 +129,146 @@ def _check_section_names(
         )
 
 
+# =============================================================================
+# Where a part is in its source (0.25.0)
+# =============================================================================
+
+# A 1-based line or page number. Strict, so a bool, a float or a numeric string
+# is refused rather than read as a number.
+SourceNumber = Annotated[int, Field(strict=True, ge=1)]
+
+# The keys of a table's free-form ``metadata`` dict that ``SourceLocation`` checks.
+SOURCE_LOCATION_KEYS: tuple[str, ...] = ("source_lines", "pages")
+
+
+class SourceLocation(AshMaticsBaseModel):
+    """Where a section or table is in the source it was read from.
+
+    ``source_lines`` is for a text source (Markdown, reStructuredText): the first
+    and last line, 1-based and inclusive, counted in the file as uploaded (front
+    matter included). ``pages`` is for a PDF: the 1-based pages the part is on, as
+    the PDF extractor lists them (a table continued over two pages is ``[3, 4]``).
+    Either, both or neither may be given.
+    """
+
+    source_lines: tuple[SourceNumber, SourceNumber] | None = Field(
+        None,
+        description="[first, last] line in a text source, 1-based, inclusive",
+    )
+    pages: list[SourceNumber] | None = Field(
+        None,
+        description="1-based pages of a PDF source that hold the part",
+    )
+
+    @model_validator(mode="after")
+    def _lines_in_order(self) -> "SourceLocation":
+        if self.source_lines is not None:
+            start, end = self.source_lines
+            if end < start:
+                raise ValueError(
+                    f"source_lines {list(self.source_lines)} ends before it starts"
+                )
+        return self
+
+
+def _check_table_location(metadata: dict[str, Any]) -> dict[str, Any]:
+    """Check ``source_lines`` and ``pages`` in a table's metadata, if present.
+
+    Table metadata stays a free-form dict (``markdown``, ``header``, ``rows``,
+    ``source_format`` and whatever a pipeline adds); only these two keys are
+    checked, with ``SourceLocation``'s rules, and the dict is returned unchanged.
+    """
+    located = {k: metadata[k] for k in SOURCE_LOCATION_KEYS if k in metadata}
+    if located:
+        SourceLocation.model_validate(located)
+    return metadata
+
+
+class SystemDocumentTable(TableReference):
+    """A table of an IFU or system card.
+
+    A ``TableReference`` whose ``metadata`` may carry ``source_lines`` and
+    ``pages`` in ``SourceLocation``'s shapes; any other metadata key is kept as
+    the pipeline wrote it.
+    """
+
+    @field_validator("metadata")
+    @classmethod
+    def _source_location(cls, metadata: dict[str, Any]) -> dict[str, Any]:
+        return _check_table_location(metadata)
+
+
+# =============================================================================
+# Where and when the source was captured (0.25.0)
+# =============================================================================
+
+
+def _page_id_as_text(value: Any) -> Any:
+    # YAML reads an unquoted page id as a number; it is an identifier, not a count.
+    if isinstance(value, int) and not isinstance(value, bool):
+        return str(value)
+    return value
+
+
+class SourceCapture(AshMaticsBaseModel):
+    """Where and when a collector took the source of a document.
+
+    For a page read from a wiki or web system (forge-collect-oracle reads Oracle
+    Health's Confluence pages): the system, the page's address, its id, version
+    and last change as the system reports them, and the collector's own record of
+    the capture: when, which collector and version, and the sha256 of the content
+    it wrote. A datetime with no offset is read as UTC.
+    """
+
+    system: str = Field(
+        ...,
+        pattern=r"^[a-z][a-z0-9_-]{0,39}$",
+        description="The system the source was read from, lower case (e.g., 'confluence')",
+    )
+    url: str = Field(
+        ...,
+        pattern=r"^https?://\S+$",
+        max_length=2000,
+        description="The page's address in that system",
+    )
+    space: str | None = Field(
+        None,
+        min_length=1,
+        max_length=200,
+        description="The space or section of the system that holds the page (Confluence space key)",
+    )
+    page_id: Annotated[str | None, BeforeValidator(_page_id_as_text)] = Field(
+        None,
+        pattern=r"^\S{1,100}$",
+        description="The system's id for the page, as text",
+    )
+    page_version: int | None = Field(
+        None,
+        strict=True,
+        ge=1,
+        description="The page's version number when it was captured",
+    )
+    page_last_modified: datetime | None = Field(
+        None,
+        description="When the system says the page last changed",
+    )
+    captured_at: datetime = Field(
+        ...,
+        description="When the collector took the page",
+    )
+    collector: str = Field(
+        ...,
+        min_length=1,
+        max_length=200,
+        description="The collector and its version (e.g., 'forge-collect-oracle/0.1.0')",
+    )
+    content_sha256: str = Field(
+        ...,
+        pattern=r"^[0-9a-f]{64}$",
+        description="sha256 of the content the collector wrote, lowercase hex",
+    )
+
+
 class SystemDocumentSection(SectionBase):
     """One section of an IFU or system card, its text verbatim."""
 
@@ -135,6 +283,10 @@ class SystemDocumentSection(SectionBase):
             "exist ...', 'Not available. ...'). The text keeps the statement: "
             "'no external validation was conducted' is a fact a hazard analysis uses."
         ),
+    )
+    metadata: SourceLocation | None = Field(
+        None,
+        description="Where the section is in its source (0.25.0); None when not recorded",
     )
 
 
@@ -184,6 +336,10 @@ class IfuMetadataContent(MetadataContentBase):
         None,
         description="The time in the print header, when the source is a printed web page",
     )
+    source_capture: SourceCapture | None = Field(
+        None,
+        description="Where and when a collector took the source (0.25.0); None when not recorded",
+    )
 
 
 class IfuContent(ContentBase):
@@ -192,6 +348,10 @@ class IfuContent(ContentBase):
     sections: dict[str, SystemDocumentSection] = Field(  # type: ignore[assignment]
         default_factory=dict,
         description="Sections keyed by IFU_SECTION_NAMES; absent sections are left out",
+    )
+    tables: list[SystemDocumentTable] = Field(  # type: ignore[assignment]
+        default_factory=list,
+        description="Tables; metadata may say where each is in the source",
     )
 
     @field_validator("sections")
@@ -485,6 +645,10 @@ class SystemCardMetadataContent(MetadataContentBase):
         None,
         description="The time in the print header, when the source is a printed web page",
     )
+    source_capture: SourceCapture | None = Field(
+        None,
+        description="Where and when a collector took the source (0.25.0); None when not recorded",
+    )
 
 
 class SystemCardContent(ContentBase):
@@ -493,6 +657,10 @@ class SystemCardContent(ContentBase):
     sections: dict[str, SystemDocumentSection] = Field(  # type: ignore[assignment]
         default_factory=dict,
         description="Sections keyed by SYSTEM_CARD_SECTION_NAMES; absent sections are left out",
+    )
+    tables: list[SystemDocumentTable] = Field(  # type: ignore[assignment]
+        default_factory=list,
+        description="Tables; metadata may say where each is in the source",
     )
     monitoring: list[MonitoringMetric] = Field(
         default_factory=list,
