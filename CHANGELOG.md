@@ -1,6 +1,19 @@
 ## CHANGELOG for the Common DataModels supporting Asher FORGE
 *Copyright 2026 Asher Informatics PBC All Rights Reserved*
 
+### v0.25.1 (2026-11-02) — ASHFORGE-851 — the record of a playbook template version
+
+The KB becomes the system of record for playbook template versions (coreapp ADR-070 D2; the KB's `DESIGN-Playbook-Template-Store-20261102`, D2, D7, D12, D13). `pyproject.toml` and `__version__` say 0.25.1; not tagged. **Additive: a new package, nothing existing changes.** A patch and not 0.26.0 because `ashmatics-tools` 0.18.1 caps datamodels below 0.26.
+
+- **`ashmatics_datamodels.playbooks`.** Pydantic models only: the interior grammar, its validator and `content_hash` are `ashmatics-playbook-grammar`'s.
+- **`PlaybookTemplateStatus`**: `draft`, `published`, `retired`.
+- **`PlaybookTemplateFacets`**, coreapp's `playbook_catalog.yaml` facets, all optional, `extra="allow"` since the catalogue grows: `name`, `intent`, `tier`, `playbook_class`, `phase`, `cadence`, `subject_type`, `run_cardinality`, `trigger`, `process_domains`, `base_practices`, `capability_areas`. `produces`, `needs`, `exchanges`, `signed_off` and `fan_out` are kept as extras.
+- **`PlaybookTemplateVersionRecord`**: `slug` (`^PBT-[A-Z]+-[A-Z0-9]+-[0-9]+$`), `version` (`^[0-9]+(\.[0-9]+)*$`, at most 20 characters), `status`, `grammar_version`, `document`, `content_hash` (64 lowercase hex), `facets`, `char_version`, `variant_of`, `base_version`, `published_at`, `published_by`, `change_note` (at most 300 characters), `validated_with`, `source`. `document` needs `lanes`, `nodes` and `edges`, keeps any other key, and is held as given. A `published` or `retired` version needs `content_hash` and `published_at`; a draft has no `content_hash`. `variant_of` and `base_version` come together and never name the version itself.
+- **`PlaybookTemplateVersionSummary`**: the same fields and rules without `document`.
+- **`[0-9]`, not `\d`, in the patterns.** Pydantic's regex engine reads `\d` as any Unicode digit, and the KB orders versions by casting their parts to integers in SQL.
+- **`document` is a bare `dict`.** `AshMaticsBaseModel`'s `str_strip_whitespace` strips the keys of a `dict[str, Any]`, and the hash is a function of the document.
+- Tests: `tests/playbooks/test_playbook_template_records_ASHFORGE_851.py`.
+
 ### v0.25.0 (2026-10-31) — ASHFORGE-827 — where a system document's parts are in their source, and where it was captured
 
 kb-ingest's `vendor-eifu` and `hti1-model-card` 1.1.0 read Oracle Health's Confluence pages as the Markdown forge-collect-oracle writes, and 0.24.0 had nowhere to put a section's source lines (the KB's "Check against source" jumps to them) or the collector's record of the capture. `pyproject.toml` and `__version__` say 0.25.0; not tagged. **Backwards compatible: nothing renamed or removed.** Every addition is optional and defaults to `None`; a 0.24.0 `kb_ifu_doc` or `kb_aisystem_card` validates and keeps every value it gave (`tests/documents/test_system_document_provenance_ASHFORGE_827.py`).

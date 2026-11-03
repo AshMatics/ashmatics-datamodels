@@ -10,7 +10,7 @@ This is **ashmatics-core-datamodels**, a canonical Pydantic data models library 
 - ashmatics-knowledgebase-tools (ingestion pipelines)
 - AI Watch applications
 
-Version: 0.25.0 as of 2026-10-31 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
+Version: 0.25.1 as of 2026-11-02 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
 
 ## Development Commands
 
@@ -139,6 +139,10 @@ The library follows a domain-driven structure:
   - `watch.py` (0.21.0): `FailureWatchListRow` and `WatchedItem`; `HazardRecord.watched_items` accepts a bare surveillance-plan id or the typed row, read through `watched_item_ids` / `watch_list_rows`
   - 0.21.0 also adds `HazardRecord.method_used` / `method_rationale_ref`, `EventLink.link_type` (`LinkType`) and `DimensionHarm.not_reachable` with a reason (a not-reachable dimension has no level and is left out of the maximum)
   - Lives outside `artifacts/` on purpose: `artifacts` would import it and it needs `registry.enums`, and a hazard record is a record inside a work product, not the artifact plane
+
+- **playbooks/** - The record of one playbook template version (coreapp ADR-070 D2; ASHFORGE-851; 0.25.1)
+  - `enums.py`: `PlaybookTemplateStatus` (draft, published, retired)
+  - `templates.py`: `PlaybookTemplateFacets` (catalogue facets, other keys kept), `PlaybookTemplateVersionRecord`, `PlaybookTemplateVersionSummary` (the same without `document`). Shape only: the grammar, the validator and `content_hash` are `ashmatics-playbook-grammar`'s. The KB stores the record; FORGE reads it
 
 - **utils/** - Parsing and normalization utilities (future)
 
