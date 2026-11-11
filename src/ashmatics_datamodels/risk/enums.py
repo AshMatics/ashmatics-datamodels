@@ -187,6 +187,17 @@ class ControlTier(str, Enum):
     INFORMATION_FOR_SAFETY = "information_for_safety"
 
 
+class ControlKind(str, Enum):
+    """What kind of control it is, which says which step puts it in place
+    (SOP-RM-01 S10 technical, S11 organizational and human; 0.26.0,
+    ASHFORGE-942). Separate from ``ControlTier``, which is where the control
+    sits in the ISO 14971 order: a technical control may remove, reduce or
+    warn, and so may an organizational one."""
+
+    TECHNICAL = "technical"
+    ORGANIZATIONAL_HUMAN = "organizational_human"
+
+
 class ProbabilityReduced(str, Enum):
     """Which probability a control reduces. Every control names one: a record
     whose residual P1 fell with no P1 control on it is inconsistent."""

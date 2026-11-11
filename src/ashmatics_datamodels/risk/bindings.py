@@ -26,6 +26,7 @@ from ashmatics_datamodels.registry.bindings import BindingStatus, SchemeBinding
 from .enums import (
     Acceptability,
     AnalysisDepth,
+    ControlKind,
     ControlTier,
     HarmDimension,
     HarmLevel,
@@ -96,6 +97,12 @@ RISK_BINDINGS: tuple[SchemeBinding, ...] = (
         enum=ControlTier,
         status=BindingStatus.PRODUCT,
         note=_CHAR_CONTENT.format(src="RMP §6, ISO 14971 order"),
+    ),
+    SchemeBinding(
+        enum=ControlKind,
+        status=BindingStatus.PRODUCT,
+        note="Record shape (which implementation step puts a control in place, "
+        "SOP-RM-01 S10 or S11), not a concept.",
     ),
     SchemeBinding(
         enum=LinkType,

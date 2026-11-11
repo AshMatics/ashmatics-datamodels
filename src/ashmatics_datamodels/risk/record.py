@@ -43,9 +43,10 @@ not reachable, the per-class failure analysis, and a typed watch-list row in
 :mod:`.failure_analysis` and :mod:`.watch`.
 """
 
+import re
 from datetime import date
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from ashmatics_datamodels.common.base import AshMaticsBaseModel
 from ashmatics_datamodels.failure_modes.enums import AIFailureMode
@@ -59,6 +60,7 @@ from .enums import (
     P2_ORDINAL,
     Acceptability,
     AnalysisDepth,
+    ControlKind,
     ControlTier,
     HarmLevel,
     LinkType,
@@ -239,6 +241,9 @@ class Evidence(AshMaticsBaseModel):
     dated: date
 
 
+_ASHC_ID = re.compile(r"^ASHC-[A-Z]{2,5}-[0-9]{2,3}$")
+
+
 class RiskControl(AshMaticsBaseModel):
     """A control on this record's risk.
 
@@ -249,15 +254,64 @@ class RiskControl(AshMaticsBaseModel):
     omission.
     """
 
+    control_id: str | None = Field(
+        None,
+        min_length=1,
+        max_length=64,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$",
+        description="Stable id of this control within its record, kept on "
+        "every rewrite, so a task or a check can name one control whatever "
+        "its place in the list (0.26.0). The writer assigns it; None on a "
+        "control written before 0.26.0.",
+    )
     description: str = Field(..., min_length=1)
     tier: ControlTier
+    kind: ControlKind | None = Field(
+        None,
+        description="Technical, or organizational and human: which step puts "
+        "it in place (0.26.0). None: not said yet.",
+    )
     reduces: ProbabilityReduced
     owner: str = Field(..., min_length=1)
+    implemented: Evidence | None = Field(
+        None,
+        description="Dated evidence that the control is in place (0.26.0). "
+        "Planned: implemented and verification both None. Implemented: "
+        "implemented set. Verified: verification set.",
+    )
     verification: Evidence | None = None
     validation: Evidence | None = None
+    serves_controls: list[str] = Field(
+        default_factory=list,
+        description="The ASHC catalogue controls this risk control helps "
+        "evidence (ASHC-XXX-NN), confirmed by a person (0.26.0). A link is a "
+        "pointer, never coverage: a monitoring control (ASHC-OPS-02) is not "
+        "met by a link alone.",
+    )
+
+    @field_validator("serves_controls")
+    @classmethod
+    def _ashc_ids(cls, value: list[str]) -> list[str]:
+        for control in value:
+            if not _ASHC_ID.match(control):
+                raise ValueError(
+                    f"{control!r} is not an ASHC control id (ASHC-XXX-NN)"
+                )
+        if len(set(value)) != len(value):
+            raise ValueError("an ASHC control is named once per risk control")
+        return value
 
     @model_validator(mode="after")
     def _verified_before_validated(self) -> "RiskControl":
+        if (
+            self.implemented is not None
+            and self.verification is not None
+            and self.verification.dated < self.implemented.dated
+        ):
+            raise ValueError(
+                f"verification dated {self.verification.dated} precedes "
+                f"implementation dated {self.implemented.dated}"
+            )
         if self.validation is None:
             return self
         if self.verification is None:
