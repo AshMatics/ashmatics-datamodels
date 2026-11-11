@@ -1,6 +1,18 @@
 ## CHANGELOG for the Common DataModels supporting Asher FORGE
 *Copyright 2026 Asher Informatics PBC All Rights Reserved*
 
+### v0.26.0 (2026-11-11) — ASHFORGE-942 — a risk control's id, kind, implementation and the catalogue controls it serves
+
+The hazard run's controls screen in coreapp (walk finding F62; JF Kalafut's ruling of 2026-11-11, option (a)) needs four things `RiskControl` did not carry. `pyproject.toml` and `__version__` say 0.26.0; not tagged. **Backwards compatible for readers: every addition is optional**, and a 0.25.x record validates and keeps every value it gave (`tests/risk/test_risk_control_fields_ASHFORGE_942.py`).
+
+- **`RiskControl.control_id`** (`str | None`, 1 to 64 characters, `^[A-Za-z0-9][A-Za-z0-9._-]*$`): a stable id for the control within its record, so a task or a check names one control whatever its place in the list. The writer assigns it and keeps it on every rewrite.
+- **`RiskControl.kind`** (`ControlKind | None`): `technical` or `organizational_human`, the step that puts it in place (SOP-RM-01 S10, S11). Separate from `tier`, the ISO 14971 order.
+- **`RiskControl.implemented`** (`Evidence | None`): dated evidence it is in place. Planned: `implemented` and `verification` both None; Implemented: `implemented` set; Verified: `verification` set. A verification dated before the implementation is refused. Verified with no `implemented` stays valid (every control written before 0.26.0).
+- **`RiskControl.serves_controls`** (`list[str]`, default empty): the ASHC catalogue controls (`^ASHC-[A-Z]{2,5}-[0-9]{2,3}$`) this risk control helps evidence, each named once. Confirmed by a person; nothing fills it. A link is a pointer, never coverage: a monitoring control (ASHC-OPS-02) is never met by a link alone.
+- **`ControlKind`** enum, exported from `ashmatics_datamodels.risk`, with a `PRODUCT` binding row (record shape, not an ontology concept).
+- **`model_dump()` of a record now emits `control_id`, `kind`, `implemented` (None) and `serves_controls` (`[]`) on every control**, and a 0.25.x install (`extra="forbid"`) refuses a payload that carries them. A consumer that reads hazard records stored by a 0.26.0 writer raises its floor to 0.26.0 first. The Knowledgebase caps datamodels below 0.26.0; it does not read hazard records.
+- The two failures in `tests/documents/test_ontology_binding.py` are 0.24.0's: they pass against ashmatics-ontology 2.16.0, not its main.
+
 ### v0.25.1 (2026-11-02) — ASHFORGE-851 — the record of a playbook template version
 
 The KB becomes the system of record for playbook template versions (coreapp ADR-070 D2; the KB's `DESIGN-Playbook-Template-Store-20261102`, D2, D7, D12, D13). `pyproject.toml` and `__version__` say 0.25.1; not tagged. **Additive: a new package, nothing existing changes.** A patch and not 0.26.0 because `ashmatics-tools` 0.18.1 caps datamodels below 0.26.

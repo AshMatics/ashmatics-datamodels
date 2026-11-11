@@ -34,7 +34,7 @@ Usage:
     from ashmatics_datamodels.playbooks import PlaybookTemplateVersionRecord
 """
 
-__version__ = "0.25.1"
+__version__ = "0.26.0"
 __author__ = "Asher Informatics PBC"
 
 from ashmatics_datamodels.common import AshMaticsBaseModel, TimestampedModel
