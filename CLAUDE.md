@@ -10,7 +10,7 @@ This is **ashmatics-core-datamodels**, a canonical Pydantic data models library 
 - ashmatics-knowledgebase-tools (ingestion pipelines)
 - AI Watch applications
 
-Version: 0.25.1 as of 2026-11-02 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
+Version: 0.26.0 as of 2026-11-11 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
 
 ## Development Commands
 
@@ -138,6 +138,7 @@ The library follows a domain-driven structure:
   - `failure_analysis.py` (0.21.0): `FailureClassScreening` / `FailureClassScreeningSet` (the per-system failure-class screen, stored on the risk file) and `FailureAnalysisEntry` (RM-02 Step 2, per credible class per record; `HazardRecord.failure_analysis`)
   - `watch.py` (0.21.0): `FailureWatchListRow` and `WatchedItem`; `HazardRecord.watched_items` accepts a bare surveillance-plan id or the typed row, read through `watched_item_ids` / `watch_list_rows`
   - 0.21.0 also adds `HazardRecord.method_used` / `method_rationale_ref`, `EventLink.link_type` (`LinkType`) and `DimensionHarm.not_reachable` with a reason (a not-reachable dimension has no level and is left out of the maximum)
+  - 0.26.0 (ASHFORGE-942): `RiskControl.control_id`, `kind` (`ControlKind`: technical / organizational_human), `implemented` (dated `Evidence`; Planned → Implemented → Verified) and `serves_controls` (ASHC catalogue ids, a pointer never coverage), all optional
   - Lives outside `artifacts/` on purpose: `artifacts` would import it and it needs `registry.enums`, and a hazard record is a record inside a work product, not the artifact plane
 
 - **playbooks/** - The record of one playbook template version (coreapp ADR-070 D2; ASHFORGE-851; 0.25.1)
