@@ -10,7 +10,7 @@ This is **ashmatics-core-datamodels**, a canonical Pydantic data models library 
 - ashmatics-knowledgebase-tools (ingestion pipelines)
 - AI Watch applications
 
-Version: 0.26.0 as of 2026-11-11 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
+Version: 0.27.0 as of 2026-11-25 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
 
 ## Development Commands
 
@@ -145,6 +145,12 @@ The library follows a domain-driven structure:
   - `enums.py`: `PlaybookTemplateStatus` (draft, published, retired)
   - `templates.py`: `PlaybookTemplateFacets` (catalogue facets, other keys kept), `PlaybookTemplateVersionRecord`, `PlaybookTemplateVersionSummary` (the same without `document`). Shape only: the grammar, the validator and `content_hash` are `ashmatics-playbook-grammar`'s. The KB stores the record; FORGE reads it
 
+- **dicom/** - Named DICOM sources and typed DICOM results (forge/watch ADR-009; ASHFORGE-967; 0.27.0)
+  - `enums.py`: `DicomSourceKind`, `DicomAuthMethod`, `DicomOperation`, `DicomSourceMode`, `DicomSourceStatus` (draft, registered), `QueryRetrieveLevel`, `DicomProbeKind`, `DicomMoveOutcome`. Record shape, not ontology-bound
+  - `sources.py`: `DicomSourceDescriptor` (logical; what FORGE holds: no address, no secret reference), `DicomSourceEndpoint` (site part: host, port, base URL, `secret_ref`, timeouts), `SiteDicomSource` (the two joined with `DicomSourceHealth`, checked together), `DimseProtocol`, `DicomWebProtocol`, `validate_ae_title`
+  - `results.py`: `DicomStudyRow`, `DicomSeriesRow`, `DicomInstanceRow`, `DicomPatientDemographics` with `DEMOGRAPHIC_FIELD_PURPOSE` (minimum-necessary purpose per field), `DicomMoveResult` (final counts, `partial` for B000)
+  - No secret value has a field. The connector (`platform/distributed` `dicom-connector`) holds the pynetdicom code
+
 - **utils/** - Parsing and normalization utilities (future)
 
 Ontology-bound enums across `documents/`, `org/`, and `methods/` carry `x_ontology_scheme` bindings validated by rdflib guard tests against `../ashmatics-ontology` TTLs (ADR-002 in that repo's `docs/decisions/` — this repo has no ADR series of its own).
@@ -241,6 +247,7 @@ summary = EvidenceSummary.from_document(full_document)
 - 0.6.0: `methods/` module (ASHKBAPP-99; never separately released)
 - 0.7.0: `artifacts/` module (ASHKBAPP-99)
 - 0.8.0: `registry/` module (ASHFORGE-412)
+- 0.27.0: `dicom/` module (ASHFORGE-967)
 
 **Future Phases**:
 - Phase 3: Ontology consolidation (terms, valuesets from ashmatics-tools)

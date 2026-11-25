@@ -32,9 +32,10 @@ Usage:
     from ashmatics_datamodels.failure_modes import AIFailureMode, FailureModeTaxonomy
     from ashmatics_datamodels.risk import HazardRecord, system_risk_tier
     from ashmatics_datamodels.playbooks import PlaybookTemplateVersionRecord
+    from ashmatics_datamodels.dicom import DicomSourceDescriptor, DicomStudyRow
 """
 
-__version__ = "0.26.0"
+__version__ = "0.27.0"
 __author__ = "Asher Informatics PBC"
 
 from ashmatics_datamodels.common import AshMaticsBaseModel, TimestampedModel
