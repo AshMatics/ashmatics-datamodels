@@ -90,6 +90,7 @@ def tag_extract() -> dict[str, Any]:
                 "pattern": r"[A-Za-z0-9_-]{1,64}",
                 "example": STEM_EXAMPLE,
                 "non_empty": True,
+                "empty_reason": "with no value the plugin writes nothing",
                 "forbidden_tokens": ["%Patient", "%Accession"],
             },
             {
@@ -164,7 +165,7 @@ def header_edit() -> dict[str, Any]:
                 "name": "dicom",
                 "format": "dicom",
                 "file_pattern": "*.dcm",
-                "phi": "headers_deidentified",
+                "phi": "possible",  # 1.1.8 keeps private tags (ADR-010 C2)
                 "description": "The same files with edited headers, in the same tree",
             }
         ],
@@ -264,10 +265,11 @@ def test_tag_extract_contract_is_valid_and_roundtrips() -> None:
 def test_tag_extract_defaults_are_refused_like_ashforge_979() -> None:
     contract = PluginContract.model_validate(tag_extract())
     errors = _errors(contract, {})
-    assert any(
-        "Output file name (--outputFileStem) must not be empty" in e for e in errors
-    )
-    assert any("File filter" in e for e in errors)
+    assert (
+        "Output file name (--outputFileStem) must not be empty: with no value the "
+        "plugin writes nothing"
+    ) in errors
+    assert "File filter (--fileFilter) must not be empty" in errors
 
 
 def test_the_preset_passes_and_a_patient_token_does_not() -> None:
@@ -304,6 +306,16 @@ def test_whitespace_in_values_is_kept() -> None:
     )
     assert split == []
     assert contract.effective_values({"splitKeyValue": " , "})["splitKeyValue"] == " , "
+
+
+def test_whitespace_survives_a_json_roundtrip() -> None:
+    data = header_edit()
+    data["parameters"][3]["default"] = "++ "
+    data["presets"][0]["values"]["splitToken"] = " ++ "
+    contract = PluginContract.model_validate_json(json.dumps(data))
+    again = PluginContract.model_validate_json(contract.model_dump_json())
+    assert again.parameter("splitToken").default == "++ "  # type: ignore[union-attr]
+    assert again.presets[0].values["splitToken"] == " ++ "
 
 
 # De-identification (ADR-010 Amendment 1)
@@ -352,6 +364,15 @@ def test_header_only_deid_cannot_declare_dicom_output_phi_free() -> None:
         PluginContract.model_validate(data)
     data["deidentification"]["handles_burned_in_pixels"] = True
     assert PluginContract.model_validate(data).outputs[0].phi == "none"
+
+
+def test_deidentified_headers_need_private_tags_removed() -> None:
+    data = header_edit()
+    data["outputs"][0]["phi"] = "headers_deidentified"
+    with pytest.raises(ValidationError, match="private tags remain"):
+        PluginContract.model_validate(data)
+    data["deidentification"]["removes_private_tags"] = True  # as from 1.2.0
+    assert PluginContract.model_validate(data).outputs[0].phi == "headers_deidentified"
 
 
 def test_only_deid_contracts_declare_deidentified_headers() -> None:
@@ -505,6 +526,7 @@ def _param(**overrides: Any) -> dict[str, Any]:
         ({"type": "string", "minimum": 1}, "are for numbers"),
         ({"type": "boolean", "choices": [True]}, "takes no choices"),
         ({"type": "string", "pattern": "[a-z]+"}, "needs a worked example"),
+        ({"type": "string", "empty_reason": "x"}, "goes with non_empty"),
         (
             {"type": "string", "pattern": "[a-z]+", "example": "A1"},
             "fails its own checks",

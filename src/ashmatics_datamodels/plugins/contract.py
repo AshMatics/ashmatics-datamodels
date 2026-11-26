@@ -40,7 +40,8 @@ stripping, because a trailing space in a pattern is a real value.
 
 Patterns are matched against the whole value, in Python here and in the browser by
 the workbench editor, so they keep to the part of regex syntax both engines share
-(see :func:`validate_portable_pattern`).
+(see :func:`validate_portable_pattern`). Python uses ``re.fullmatch(pattern, value)``;
+the browser compiles ``new RegExp('^(?:' + pattern + ')$', 'u')``.
 
 Record shape, not ontology-bound.
 """
@@ -217,7 +218,15 @@ class ParameterContract(AshMaticsBaseModel):
     text_format: TextFormat = TextFormat.PLAIN
     non_empty: bool = Field(
         default=False,
-        description="An empty value makes the plugin do nothing, so it is refused",
+        description="An empty value is refused, even where CUBE allows it",
+    )
+    empty_reason: str | None = Field(
+        default=None,
+        max_length=200,
+        description=(
+            "What an empty value would do, shown when it is refused, e.g. "
+            "'with no value the plugin writes nothing'"
+        ),
     )
     forbidden_tokens: list[str] = Field(
         default_factory=list,
@@ -289,6 +298,8 @@ class ParameterContract(AshMaticsBaseModel):
                 f"{self.name}: pattern, example, text format, non-empty and forbidden "
                 "tokens are for text parameters"
             )
+        if self.empty_reason is not None and not self.non_empty:
+            raise ValueError(f"{self.name}: an empty reason goes with non_empty")
         if self.pattern is not None and self.example is None:
             raise ValueError(f"{self.name}: a pattern needs a worked example")
         if self.example is not None:
@@ -316,10 +327,8 @@ class ParameterContract(AshMaticsBaseModel):
         kind = self.type
         if value is None or value == "":
             if self.non_empty:
-                fail(
-                    f"{self.label} ({self.flag}) must not be empty: with no value the "
-                    "plugin does nothing"
-                )
+                reason = f": {self.empty_reason}" if self.empty_reason else ""
+                fail(f"{self.label} ({self.flag}) must not be empty{reason}")
             elif value is None and not self.optional:
                 fail(f"{self.label} ({self.flag}) is required")
             return problems
@@ -577,6 +586,15 @@ class PluginContract(AshMaticsBaseModel):
                 raise ValueError(
                     f"output {output.name!r}: only a de-identification plugin can "
                     "declare de-identified headers"
+                )
+            if (
+                output.phi == OutputPhi.HEADERS_DEIDENTIFIED.value
+                and self.deidentification is not None
+                and not self.deidentification.removes_private_tags
+            ):
+                raise ValueError(
+                    f"output {output.name!r}: headers are not de-identified while "
+                    "private tags remain; declare the output 'possible'"
                 )
             if (
                 deid
