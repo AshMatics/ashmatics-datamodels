@@ -72,7 +72,7 @@ ashmatics_datamodels/
 
 ## Current Version
 
-**v0.27.0** — see `CHANGELOG.md`, which is authoritative alongside `pyproject.toml`.
+**v0.28.0** — see `CHANGELOG.md`, which is authoritative alongside `pyproject.toml`.
 
 The phase plan this section used to track was completed and superseded; module-level status now
 lives with each module rather than in a single roadmap here.

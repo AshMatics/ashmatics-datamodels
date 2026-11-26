@@ -1,0 +1,149 @@
+[
+ {
+  "name": "inputFile",
+  "type": "string",
+  "flag": "--inputFile",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "fileFilter",
+  "type": "string",
+  "flag": "--fileFilter",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "fileFilterLogic",
+  "type": "string",
+  "flag": "--fileFilterLogic",
+  "optional": true,
+  "default": "OR"
+ },
+ {
+  "name": "dirFilter",
+  "type": "string",
+  "flag": "--dirFilter",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "dirFilterLogic",
+  "type": "string",
+  "flag": "--dirFilterLogic",
+  "optional": true,
+  "default": "OR"
+ },
+ {
+  "name": "tagFile",
+  "type": "string",
+  "flag": "--tagFile",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "tagList",
+  "type": "string",
+  "flag": "--tagList",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "rawType",
+  "type": "string",
+  "flag": "-r",
+  "optional": true,
+  "default": "raw"
+ },
+ {
+  "name": "imageFile",
+  "type": "string",
+  "flag": "--imageFile",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "syslog",
+  "type": "boolean",
+  "flag": "--syslog",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "imageScale",
+  "type": "string",
+  "flag": "--imageScale",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "outputFileStem",
+  "type": "string",
+  "flag": "--outputFileStem",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "outputFileType",
+  "type": "string",
+  "flag": "--outputFileType",
+  "optional": true,
+  "default": "raw"
+ },
+ {
+  "name": "printElapsedTime",
+  "type": "boolean",
+  "flag": "--printElapsedTime",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "useIndexhtml",
+  "type": "boolean",
+  "flag": "--useIndexhtml",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "printToScreen",
+  "type": "boolean",
+  "flag": "--printToScreen",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "synopsis",
+  "type": "boolean",
+  "flag": "--synopsis",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "threads",
+  "type": "string",
+  "flag": "--threads",
+  "optional": true,
+  "default": "0"
+ },
+ {
+  "name": "outputLeafDir",
+  "type": "string",
+  "flag": "--outputLeafDir",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "followLinks",
+  "type": "boolean",
+  "flag": "--followLinks",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "jsonReturn",
+  "type": "boolean",
+  "flag": "--jsonReturn",
+  "optional": true,
+  "default": false
+ }
+]

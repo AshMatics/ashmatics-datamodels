@@ -1,6 +1,22 @@
 ## CHANGELOG for the Common DataModels supporting Asher FORGE
 *Copyright 2026 Asher Informatics PBC All Rights Reserved*
 
+### v0.28.0 (2026-11-26) — ASHFORGE-980 — plugin contracts for ChRIS plugins
+
+forge/watch ADR-010 (accepted 2026-11-26) decision 2 puts the plugin contract here, so the watch backend, plugin CI and, later, the signed pipeline catalog share one schema. `pyproject.toml` and `__version__` say 0.28.0; not tagged. **Additive: a new package, nothing existing changes.**
+
+- **`ashmatics_datamodels.plugins`.** Pydantic models and the two shared checks only.
+- **`PluginContract`** covers one plugin at one exact version (`plugin_version` is `X.Y.Z`, never a range): `plugin_type` (`ds`, `fs`, `ts`), `origin` (`asher`, `adopted`), `role` (`general`, `deidentification`), `inputs` (`PluginInput`: `format`, `file_pattern`, `min_files`, `layout` `any_tree` / `flat` / `series_per_folder`, `modalities`), `outputs` (`PluginOutput`: `format`, `file_pattern`, `min_count`, and `phi`, which has no default), `parameters`, `rules`, `presets`, `fixture` and `deidentification`. An fs plugin has no inputs; a ds or ts plugin has at least one.
+- **`ParameterContract`** restates CUBE's `name`, `flag`, `type`, `optional` and `default`, and adds what CUBE cannot say: `label`, `help`, `advanced`, `choices`, `minimum` / `maximum` / `unit` (numbers only), `pattern` with a required `example` (text only), `text_format` (`plain`, `json`, `regex`), `non_empty` and `forbidden_tokens`. Defaults, choices and bounds must match the CUBE type, and `True` is never an integer. `default` is recorded as CUBE has it, even when the contract refuses it.
+- **Patterns are portable.** They are matched against the whole value, in Python and in the browser, so `validate_portable_pattern` allows only `(?:`, `(?=` and `(?!` groups and refuses `\A`, `\Z`, `\z` and `\G`.
+- **Whitespace is kept.** Models that hold parameter values turn off the base model's `str_strip_whitespace`, because a trailing space in a pattern is a real value.
+- **`ParameterRule`** expresses rules across parameters: `exactly_one_of`, `at_most_one_of`, `at_least_one_of` and `requires`. A value counts as set unless it is None, `""` or `False` (`is_set`).
+- **Presets must pass.** Each `PluginPreset`, applied over the defaults, must pass every check, or the contract is refused.
+- **Asher plugins carry a fixture** (`PluginFixture`: location, preset, one-line `command`, `expected_outputs`).
+- **De-identification (ADR-010 Amendment 1).** A `deidentification` contract needs a `DeidentificationSpec` (`verify_tags` as DICOM keywords, `removes_private_tags`, `handles_burned_in_pixels`) and at least one preset. Only such a contract may declare `headers_deidentified` output, and one that does not handle burned-in pixels cannot declare DICOM output `none`.
+- **Checks.** `check_values()` returns every `ContractProblem` (`severity`, `parameter`, `rule`, `message`), each naming the parameter, the value and what was expected. `compare_with_cube()` takes the plugin API's parameter list or `chris_plugin.json`'s: a listed parameter missing from CUBE or disagreeing on flag, type, optional or default is an error, and a CUBE parameter the contract leaves out is a warning.
+- Tests: `tests/plugins/test_plugin_contract_ASHFORGE_980.py`, on real CUBE parameter lists for `pl-pfdicom_tagExtract` 3.2.4 and `pl-dicom_headerEdit` 1.1.8 (`tests/plugins/data/`).
+
 ### v0.27.0 (2026-11-25) — ASHFORGE-967 — named DICOM sources, and typed DICOM query and move results
 
 forge/watch ADR-009 decision 3 puts the DICOM source descriptor here, so coreapp's AI Registry and the watch Django Ninja backend share one schema, and the Distributed DICOM connector is built from it. `pyproject.toml` and `__version__` say 0.27.0; not tagged. **Additive: a new package, nothing existing changes.**

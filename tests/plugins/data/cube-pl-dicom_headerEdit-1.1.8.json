@@ -1,0 +1,170 @@
+[
+ {
+  "name": "maxDepth",
+  "type": "string",
+  "flag": "--maxDepth",
+  "optional": true,
+  "default": "-1"
+ },
+ {
+  "name": "inputFile",
+  "type": "string",
+  "flag": "--inputFile",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "man",
+  "type": "boolean",
+  "flag": "--man",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "synopsis",
+  "type": "boolean",
+  "flag": "--synopsis",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "verbosity",
+  "type": "string",
+  "flag": "--verbosity",
+  "optional": true,
+  "default": "1"
+ },
+ {
+  "name": "threads",
+  "type": "string",
+  "flag": "--threads",
+  "optional": true,
+  "default": "0"
+ },
+ {
+  "name": "outputLeafDir",
+  "type": "string",
+  "flag": "--outputLeafDir",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "relativeDir",
+  "type": "boolean",
+  "flag": "--relativeDir",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "json",
+  "type": "boolean",
+  "flag": "--json",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "printElapsedTime",
+  "type": "boolean",
+  "flag": "--printElapsedTime",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "followLinks",
+  "type": "boolean",
+  "flag": "--followLinks",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "overwrite",
+  "type": "boolean",
+  "flag": "--overwrite",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "b_version",
+  "type": "boolean",
+  "flag": "--version",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "fileFilter",
+  "type": "string",
+  "flag": "--fileFilter",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "fileFilterLogic",
+  "type": "string",
+  "flag": "--fileFilterLogic",
+  "optional": true,
+  "default": "OR"
+ },
+ {
+  "name": "dirFilter",
+  "type": "string",
+  "flag": "--dirFilter",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "dirFilterLogic",
+  "type": "string",
+  "flag": "--dirFilterLogic",
+  "optional": true,
+  "default": "OR"
+ },
+ {
+  "name": "syslog",
+  "type": "boolean",
+  "flag": "--syslog",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "outputFileStem",
+  "type": "string",
+  "flag": "--outputFileStem",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "tagStruct",
+  "type": "string",
+  "flag": "--tagStruct",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "tagInfo",
+  "type": "string",
+  "flag": "--tagInfo",
+  "optional": true,
+  "default": ""
+ },
+ {
+  "name": "splitKeyValue",
+  "type": "string",
+  "flag": "--splitKeyValue",
+  "optional": true,
+  "default": ","
+ },
+ {
+  "name": "splitToken",
+  "type": "string",
+  "flag": "--splitToken",
+  "optional": true,
+  "default": "++"
+ },
+ {
+  "name": "pftelDB",
+  "type": "string",
+  "flag": "--pftelDB",
+  "optional": true,
+  "default": ""
+ }
+]
