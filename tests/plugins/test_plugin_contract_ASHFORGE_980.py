@@ -594,3 +594,63 @@ def test_portable_patterns_pass(pattern: str) -> None:
 )
 def test_what_counts_as_set(value: Any, expected: bool) -> None:
     assert is_set(value) is expected
+
+
+# 0.28.1: chris_plugin.json type names
+
+
+def lungai() -> dict[str, Any]:
+    params = []
+    for row in _cube("chris_plugin-pl-lungai-demo-0.1.1.json"):
+        kind = {"int": "integer", "bool": "boolean"}.get(row["type"], row["type"])
+        params.append(
+            {
+                "name": row["name"],
+                "flag": row["flag"],
+                "type": kind,
+                "optional": row["optional"],
+                "default": row["default"],
+                "label": row["name"],
+                "help": "h",
+            }
+        )
+    return {
+        "plugin_name": "pl-lungai-demo",
+        "plugin_version": "0.1.1",
+        "plugin_type": "ds",
+        "origin": "adopted",
+        "title": "LungAI demo",
+        "description": "d",
+        "inputs": [
+            {
+                "name": "ct",
+                "format": "dicom",
+                "file_pattern": "*.dcm",
+                "description": "CT",
+            }
+        ],
+        "outputs": [
+            {
+                "name": "summary",
+                "format": "json",
+                "file_pattern": "summary.json",
+                "phi": "none",
+                "description": "counts",
+            }
+        ],
+        "parameters": params,
+    }
+
+
+def test_chris_plugin_json_type_names_are_accepted() -> None:
+    contract = PluginContract.model_validate(lungai())
+    descriptor = _cube("chris_plugin-pl-lungai-demo-0.1.1.json")
+    assert {row["type"] for row in descriptor} == {"bool", "float", "int"}
+    assert contract.compare_with_cube(descriptor) == []
+    wrong = [
+        dict(row, type="str") if row["name"] == "topK" else row for row in descriptor
+    ]
+    [problem] = contract.compare_with_cube(wrong)
+    assert (
+        problem.message == "topK: the contract's type is 'integer', CUBE's is 'string'"
+    )

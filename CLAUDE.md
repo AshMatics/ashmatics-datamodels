@@ -10,7 +10,7 @@ This is **ashmatics-core-datamodels**, a canonical Pydantic data models library 
 - ashmatics-knowledgebase-tools (ingestion pipelines)
 - AI Watch applications
 
-Version: 0.28.0 as of 2026-11-26 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
+Version: 0.28.1 as of 2026-11-26 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
 
 ## Development Commands
 

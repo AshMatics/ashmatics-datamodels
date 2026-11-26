@@ -28,6 +28,7 @@ Usage::
 """
 
 from .contract import (
+    CHRIS_PLUGIN_TYPE_NAMES,
     CONTRACT_SCHEMA_VERSION,
     PLUGIN_NAME_PATTERN,
     PLUGIN_VERSION_PATTERN,
@@ -59,6 +60,7 @@ from .enums import (
 )
 
 __all__ = [
+    "CHRIS_PLUGIN_TYPE_NAMES",
     "CONTRACT_SCHEMA_VERSION",
     "PLUGIN_NAME_PATTERN",
     "PLUGIN_VERSION_PATTERN",

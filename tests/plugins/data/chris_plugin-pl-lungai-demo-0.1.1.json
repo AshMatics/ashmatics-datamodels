@@ -1,0 +1,58 @@
+[
+ {
+  "name": "windowCenter",
+  "type": "float",
+  "flag": "--windowCenter",
+  "optional": true,
+  "default": -600.0
+ },
+ {
+  "name": "windowWidth",
+  "type": "float",
+  "flag": "--windowWidth",
+  "optional": true,
+  "default": 1500.0
+ },
+ {
+  "name": "minLungFraction",
+  "type": "float",
+  "flag": "--minLungFraction",
+  "optional": true,
+  "default": 0.3
+ },
+ {
+  "name": "maxSlices",
+  "type": "int",
+  "flag": "--maxSlices",
+  "optional": true,
+  "default": 64
+ },
+ {
+  "name": "topK",
+  "type": "int",
+  "flag": "--topK",
+  "optional": true,
+  "default": 5
+ },
+ {
+  "name": "threshold",
+  "type": "float",
+  "flag": "--threshold",
+  "optional": true,
+  "default": 0.5
+ },
+ {
+  "name": "noSlices",
+  "type": "bool",
+  "flag": "--noSlices",
+  "optional": true,
+  "default": false
+ },
+ {
+  "name": "noQaPng",
+  "type": "bool",
+  "flag": "--noQaPng",
+  "optional": true,
+  "default": false
+ }
+]

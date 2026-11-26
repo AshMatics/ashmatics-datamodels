@@ -1,6 +1,6 @@
 # AshMatics Core DataModels
 
-**Version: 0.28.0**
+**Version: 0.28.1**
 
 Canonical Pydantic data models for AshMatics healthcare applications.
 
