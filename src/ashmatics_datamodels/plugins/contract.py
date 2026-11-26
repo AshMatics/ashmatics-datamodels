@@ -87,6 +87,12 @@ SLUG_PATTERN = r"^[a-z0-9][a-z0-9_-]{0,63}$"
 DICOM_KEYWORD_PATTERN = r"^[A-Za-z][A-Za-z0-9]{0,63}$"
 MODALITY_PATTERN = r"^[A-Z0-9]{2,16}$"
 CONTRACT_SCHEMA_VERSION: Literal["1"] = "1"
+CHRIS_PLUGIN_TYPE_NAMES: dict[str, str] = {
+    "str": "string",
+    "int": "integer",
+    "bool": "boolean",
+}
+"""``chris_plugin.json`` type names that differ from CUBE's (``chris_plugin.types``)."""
 
 _VALUE_PREVIEW = 80
 _PORTABLE_GROUP_PREFIXES = ("(?:", "(?=", "(?!")
@@ -660,8 +666,10 @@ class PluginContract(AshMaticsBaseModel):
 
         ``cube_parameters`` is the plugin API's ``results`` or ``chris_plugin.json``'s
         ``parameters``: dicts with ``name``, ``type``, ``flag``, ``optional`` and
-        ``default``. A listed parameter missing from CUBE, or disagreeing with it, is
-        an error. A CUBE parameter the contract leaves out is a warning.
+        ``default``. ``chris_plugin.json`` writes ``str``, ``int`` and ``bool`` where
+        CUBE says ``string``, ``integer`` and ``boolean``; both spellings are accepted.
+        A listed parameter missing from CUBE, or disagreeing with it, is an error. A
+        CUBE parameter the contract leaves out is a warning.
         """
         problems: list[ContractProblem] = []
         by_name = {str(p.get("name")): p for p in cube_parameters}
@@ -683,6 +691,8 @@ class PluginContract(AshMaticsBaseModel):
                 ("default", param.default),
             ):
                 theirs = cube.get(field)
+                if field == "type":
+                    theirs = CHRIS_PLUGIN_TYPE_NAMES.get(str(theirs), theirs)
                 if field == "default" and theirs is None and not param.optional:
                     continue  # CUBE keeps no default for a required parameter
                 if not _same_value(theirs, ours):

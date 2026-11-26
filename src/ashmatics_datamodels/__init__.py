@@ -36,7 +36,7 @@ Usage:
     from ashmatics_datamodels.plugins import PluginContract
 """
 
-__version__ = "0.28.0"
+__version__ = "0.28.1"
 __author__ = "Asher Informatics PBC"
 
 from ashmatics_datamodels.common import AshMaticsBaseModel, TimestampedModel

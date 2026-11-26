@@ -1,6 +1,10 @@
 ## CHANGELOG for the Common DataModels supporting Asher FORGE
 *Copyright 2026 Asher Informatics PBC All Rights Reserved*
 
+### v0.28.1 (2026-11-26) — ASHFORGE-980 — `compare_with_cube` reads `chris_plugin.json` type names
+
+**Fix.** `PluginContract.compare_with_cube()` promised to take `chris_plugin.json`'s parameters, but that file writes `str`, `int` and `bool` (`chris_plugin.types.ParameterType`) where CUBE's API says `string`, `integer` and `boolean`, so every non-string parameter of a plugin's own descriptor was reported as a type mismatch. Those three names are now mapped (`CHRIS_PLUGIN_TYPE_NAMES`); `float`, `path` and `unextpath` are the same in both. Contracts keep CUBE's names. Test on `pl-lungai-demo` 0.1.1's real `chris_plugin.json`.
+
 ### v0.28.0 (2026-11-26) — ASHFORGE-980 — plugin contracts for ChRIS plugins
 
 forge/watch ADR-010 (accepted 2026-11-26) decision 2 puts the plugin contract here, so the watch backend, plugin CI and, later, the signed pipeline catalog share one schema. `pyproject.toml` and `__version__` say 0.28.0; not tagged. **Additive: a new package, nothing existing changes.**
