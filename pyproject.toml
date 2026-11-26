@@ -14,7 +14,7 @@
 
 [project]
 name = "ashmatics-datamodels"
-version = "0.27.0"  # Named DICOM sources and typed DICOM results (ASHFORGE-967)
+version = "0.28.0"  # Plugin contracts for ChRIS plugins (ASHFORGE-980)
 description = "Canonical Pydantic data models for AshMatics healthcare applications - FDA vocabulary, regulatory schemas, and clinical AI use cases"
 authors = [
     {name = "Asher Informatics PBC", email = "info@asherinformatics.com"}

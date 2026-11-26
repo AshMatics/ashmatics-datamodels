@@ -10,7 +10,7 @@ This is **ashmatics-core-datamodels**, a canonical Pydantic data models library 
 - ashmatics-knowledgebase-tools (ingestion pipelines)
 - AI Watch applications
 
-Version: 0.27.0 as of 2026-11-25 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
+Version: 0.28.0 as of 2026-11-26 — `pyproject.toml` and `CHANGELOG.md` are authoritative, not this line.
 
 ## Development Commands
 
@@ -151,6 +151,11 @@ The library follows a domain-driven structure:
   - `results.py`: `DicomStudyRow`, `DicomSeriesRow`, `DicomInstanceRow`, `DicomPatientDemographics` with `DEMOGRAPHIC_FIELD_PURPOSE` (minimum-necessary purpose per field), `DicomMoveResult` (final counts, `partial` for B000)
   - No secret value has a field. The connector (`platform/distributed` `dicom-connector`) holds the pynetdicom code
 
+- **plugins/** - Plugin contracts for ChRIS plugins (forge/watch ADR-010 and its Amendment 1; ASHFORGE-980; 0.28.0)
+  - `enums.py`: `PluginType` (ds, fs, ts), `PluginParameterType` (CUBE's six), `ContractOrigin` (asher, adopted), `PluginRole` (general, deidentification), `PluginDataFormat`, `InputLayout`, `OutputPhi` (none, possible, headers_deidentified), `TextFormat` (plain, json, regex), `ParameterRuleKind`, `ContractProblemSeverity`. Record shape, not ontology-bound
+  - `contract.py`: `PluginContract` (one plugin at one exact version) with `ParameterContract`, `ParameterRule`, `PluginInput`, `PluginOutput`, `PluginPreset`, `PluginFixture`, `DeidentificationSpec`; `check_values()` and `compare_with_cube()` return `ContractProblem` rows; `validate_portable_pattern` (patterns run in Python and the browser), `is_set`
+  - Value-bearing models turn off the base model's whitespace stripping: a trailing space in a parameter is a real value
+
 - **utils/** - Parsing and normalization utilities (future)
 
 Ontology-bound enums across `documents/`, `org/`, and `methods/` carry `x_ontology_scheme` bindings validated by rdflib guard tests against `../ashmatics-ontology` TTLs (ADR-002 in that repo's `docs/decisions/` — this repo has no ADR series of its own).
@@ -248,6 +253,7 @@ summary = EvidenceSummary.from_document(full_document)
 - 0.7.0: `artifacts/` module (ASHKBAPP-99)
 - 0.8.0: `registry/` module (ASHFORGE-412)
 - 0.27.0: `dicom/` module (ASHFORGE-967)
+- 0.28.0: `plugins/` module (ASHFORGE-980)
 
 **Future Phases**:
 - Phase 3: Ontology consolidation (terms, valuesets from ashmatics-tools)
